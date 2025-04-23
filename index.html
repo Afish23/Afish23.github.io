@@ -354,19 +354,19 @@
 
 
   
-    <article id="post-算法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-LRU缓存" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2024/08/02/%E7%AE%97%E6%B3%95/">滑动窗口</a>
+      <a class="article-title" href="/2024/08/02/LRU%E7%BC%93%E5%AD%98/">LRU缓存</a>
     </h1>
   
 
         
-        <a href="/2024/08/02/%E7%AE%97%E6%B3%95/" class="archive-article-date">
+        <a href="/2024/08/02/LRU%E7%BC%93%E5%AD%98/" class="archive-article-date">
   	<time datetime="2024-08-02T10:53:47.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-08-02</time>
 </a>
         
@@ -374,13 +374,172 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="典型应用"><a href="#典型应用" class="headerlink" title="典型应用"></a>典型应用</h1><h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>给定一个字符串，请你找出其中不含有无重复字符的最长子串</p>
-<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><ul>
-<li>我们使用两个指针表示字符串中的某个子串（或窗口）的左右边界，其中左指针代表着上文  中「枚举子串的起始位置」，而右指针即为不包含重复字符的最长子串的结束位置；    </li>
-<li>在每一步的操作中，我们会将左指针向右移动一格，表示 我们开始枚举下一个字符作为起始位置，然后我们可以不断地向右移动右指针，但需要保证这两个指针对应的子串中没有重复的字符。在移动结束后，这个子串就对应着 以左指针开始的，不包含重复字符的最长子串。我们记录下这个子串的长度； </li>
+        <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>请你设计并实现一个满足  LRU (最近最少使用) 缓存 约束的数据结构。</p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><ol>
+<li>使用双向链表来维护键值对的顺序：链表头部表示最近使用的节点；链表尾部表示最久未使用的节点。</li>
+<li>使用哈希表来实现快速查找：键为缓存的键；值为对应的链表节点。</li>
+<li>虚拟头节点（dummy）简化了链表操作，避免处理边界条件。</li>
+</ol>
+<h2 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">LRUCache</span> &#123;</span><br><span class="line">    <span class="comment">// 定义双向链表节点类，用于存储键值对和指向前后的指针</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">        <span class="type">int</span> key, value;  <span class="comment">// 存储键值对</span></span><br><span class="line">        Node prev, next; <span class="comment">// 指向前一个节点和后一个节点的指针</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 构造函数，初始化节点</span></span><br><span class="line">        Node(<span class="type">int</span> k, <span class="type">int</span> v) &#123;</span><br><span class="line">            key = k;</span><br><span class="line">            value = v;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">int</span> capacity; <span class="comment">// 缓存的最大容量</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">Node</span> <span class="variable">dummy</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Node</span>(<span class="number">0</span>, <span class="number">0</span>); <span class="comment">// 虚拟头节点，用于简化操作</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Map&lt;Integer, Node&gt; keyToNode = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;(); <span class="comment">// 哈希表，用于快速查找节点</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 构造函数，初始化缓存容量，并设置虚拟头节点的前后指针指向自己</span></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">LRUCache</span><span class="params">(<span class="type">int</span> capacity)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.capacity = capacity;</span><br><span class="line">        dummy.prev = dummy; <span class="comment">// 初始化时，dummy 的前驱和后继都指向自己</span></span><br><span class="line">        dummy.next = dummy;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取指定键对应的值，如果不存在则返回 -1</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">get</span><span class="params">(<span class="type">int</span> key)</span> &#123;</span><br><span class="line">        <span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> getNode(key); <span class="comment">// 调用辅助方法获取节点</span></span><br><span class="line">        <span class="keyword">return</span> node != <span class="literal">null</span> ? node.value : -<span class="number">1</span>; <span class="comment">// 如果节点存在，返回其值；否则返回 -1</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 插入或更新键值对</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">put</span><span class="params">(<span class="type">int</span> key, <span class="type">int</span> value)</span> &#123;</span><br><span class="line">        <span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> getNode(key); <span class="comment">// 尝试获取节点</span></span><br><span class="line">        <span class="keyword">if</span> (node != <span class="literal">null</span>) &#123; <span class="comment">// 如果节点已存在，更新其值</span></span><br><span class="line">            node.value = value;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 如果节点不存在，创建新节点并插入到哈希表和链表中</span></span><br><span class="line">        node = <span class="keyword">new</span> <span class="title class_">Node</span>(key, value);</span><br><span class="line">        keyToNode.put(key, node); <span class="comment">// 插入哈希表</span></span><br><span class="line">        pushFront(node); <span class="comment">// 将节点插入到链表头部（表示最近使用）</span></span><br><span class="line">        <span class="keyword">if</span> (keyToNode.size() &gt; capacity) &#123; <span class="comment">// 如果超出容量，移除最久未使用的节点</span></span><br><span class="line">            <span class="type">Node</span> <span class="variable">backNode</span> <span class="operator">=</span> dummy.prev; <span class="comment">// 最久未使用的节点在链表尾部</span></span><br><span class="line">            keyToNode.remove(backNode.key); <span class="comment">// 从哈希表中移除</span></span><br><span class="line">            remove(backNode); <span class="comment">// 从链表中移除</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 辅助方法：获取指定键的节点，并将其移动到链表头部（表示最近使用）</span></span><br><span class="line">    <span class="keyword">private</span> Node <span class="title function_">getNode</span><span class="params">(<span class="type">int</span> key)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (!keyToNode.containsKey(key)) &#123; <span class="comment">// 如果键不存在，返回 null</span></span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> keyToNode.get(key); <span class="comment">// 获取节点</span></span><br><span class="line">        remove(node); <span class="comment">// 从链表中移除该节点</span></span><br><span class="line">        pushFront(node); <span class="comment">// 将节点重新插入到链表头部</span></span><br><span class="line">        <span class="keyword">return</span> node; <span class="comment">// 返回该节点</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 辅助方法：从链表中移除指定节点</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">remove</span><span class="params">(Node x)</span> &#123;</span><br><span class="line">        x.prev.next = x.next; <span class="comment">// 将前驱节点的 next 指向后继节点</span></span><br><span class="line">        x.next.prev = x.prev; <span class="comment">// 将后继节点的 prev 指向前驱节点</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 辅助方法：将指定节点插入到链表头部</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">pushFront</span><span class="params">(Node x)</span> &#123;</span><br><span class="line">        x.prev = dummy; <span class="comment">// 设置节点的前驱为虚拟头节点</span></span><br><span class="line">        x.next = dummy.next; <span class="comment">// 设置节点的后继为虚拟头节点的下一个节点</span></span><br><span class="line">        x.prev.next = x; <span class="comment">// 更新虚拟头节点的 next 指向当前节点</span></span><br><span class="line">        x.next.prev = x; <span class="comment">// 更新原第一个节点的 prev 指向当前节点</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2024/08/02/LRU%E7%BC%93%E5%AD%98/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-链表" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2024/08/02/%E9%93%BE%E8%A1%A8/">链表</a>
+    </h1>
+  
+
+        
+        <a href="/2024/08/02/%E9%93%BE%E8%A1%A8/" class="archive-article-date">
+  	<time datetime="2024-08-02T10:53:47.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-08-02</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="典型例题"><a href="#典型例题" class="headerlink" title="典型例题"></a>典型例题</h1><h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>给你单链表的头节点 head ，请你反转链表，并返回反转后的链表。</p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><ol>
+<li>先判断head和head.next是否为空，为空直接返回。</li>
+<li>再递归调用方法至到最后一个结点。</li>
+<li>从最后一个结点开始指向前一个结点，然后更新头结点。</li>
+<li>返回新的头节点</li>
+</ol>
+<h2 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="comment">// 定义一个方法 reverseList，用于反转单链表</span></span><br><span class="line">    <span class="keyword">public</span> ListNode <span class="title function_">reverseList</span><span class="params">(ListNode head)</span> &#123;</span><br><span class="line">        <span class="comment">// 递归终止条件：</span></span><br><span class="line">        <span class="comment">// 如果当前节点为空（head == null），或者当前节点是链表的最后一个节点（head.next == null），</span></span><br><span class="line">        <span class="comment">// 则直接返回当前节点，因为不需要反转。</span></span><br><span class="line">        <span class="keyword">if</span> (head == <span class="literal">null</span> || head.next == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> head;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 递归调用 reverseList 方法，传入当前节点的下一个节点（head.next）。</span></span><br><span class="line">        <span class="comment">// 这会一直递归到链表的最后一个节点，并将其作为新的头节点（newHead）。</span></span><br><span class="line">        <span class="type">ListNode</span> <span class="variable">newHead</span> <span class="operator">=</span> reverseList(head.next);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 反转操作：</span></span><br><span class="line">        <span class="comment">// 当前节点的下一个节点（head.next）的 next 指针指向当前节点（head），</span></span><br><span class="line">        <span class="comment">// 实现了局部的链表反转。</span></span><br><span class="line">        head.next.next = head;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 将当前节点的 next 指针置为 null，避免形成环。</span></span><br><span class="line">        <span class="comment">// 这一步很重要，确保链表反转后不会出现循环引用。</span></span><br><span class="line">        head.next = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 返回新的头节点（newHead），它在递归过程中始终是原链表的最后一个节点。</span></span><br><span class="line">        <span class="keyword">return</span> newHead;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2024/08/02/%E9%93%BE%E8%A1%A8/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-滑动窗口" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2024/08/02/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/">滑动窗口</a>
+    </h1>
+  
+
+        
+        <a href="/2024/08/02/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/" class="archive-article-date">
+  	<time datetime="2024-08-02T10:53:47.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-08-02</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="典型例题"><a href="#典型例题" class="headerlink" title="典型例题"></a>典型例题</h1><h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>给定一个字符串，请你找出其中不含有无重复字符的最长子串</p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><ol>
+<li>我们使用两个指针表示字符串中的某个子串（或窗口）的左右边界，其中左指针代表着上文中「枚举子串的起始位置」，而右指针即为不包含重复字符的最长子串的结束位置；    </li>
+<li>在每一步的操作中，我们会将左指针向右移动一格，表示我们开始枚举下一个字符作为起始位置，然后我们可以不断地向右移动右指针，但需要保证这两个指针对应的子串中没有重复的字符。在移动结束后，这个子串就对应着以左指针开始的，不包含重复字符的最长子串。我们记录下这个子串的长度； </li>
 <li>在枚举结束后，我们找到的最长的子串的长度即为答案。</li>
-</ul>
-<h2 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">lengthOfLongestSubstring</span><span class="params">(String s)</span> &#123;</span><br><span class="line">        <span class="comment">// 哈希集合，记录每个字符是否出现过</span></span><br><span class="line">        Set&lt;Character&gt; occ = <span class="keyword">new</span> <span class="title class_">HashSet</span>&lt;Character&gt;();</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> s.length();</span><br><span class="line">        <span class="comment">// 右指针，初始值为 -1，相当于我们在字符串的左边界的左侧，还没有开始移动</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">rk</span> <span class="operator">=</span> -<span class="number">1</span>, ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; ++i) &#123;</span><br><span class="line">            <span class="keyword">if</span> (i != <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="comment">// 左指针向右移动一格，移除一个字符</span></span><br><span class="line">                occ.remove(s.charAt(i - <span class="number">1</span>));</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">while</span> (rk + <span class="number">1</span> &lt; n &amp;&amp; !occ.contains(s.charAt(rk + <span class="number">1</span>))) &#123;</span><br><span class="line">                <span class="comment">// 不断地移动右指针</span></span><br><span class="line">                occ.add(s.charAt(rk + <span class="number">1</span>));</span><br><span class="line">                ++rk;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 第 i 到 rk 个字符是一个极长的无重复字符子串</span></span><br><span class="line">            ans = Math.max(ans, rk - i + <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</ol>
+<h2 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">lengthOfLongestSubstring</span><span class="params">(String s)</span> &#123;</span><br><span class="line">        <span class="comment">// 将输入字符串转换为字符数组，方便逐字符访问。</span></span><br><span class="line">        <span class="type">char</span>[] ss = s.toCharArray();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 使用一个 HashSet 来存储当前窗口内的字符，确保没有重复字符。</span></span><br><span class="line">        Set&lt;Character&gt; set = <span class="keyword">new</span> <span class="title class_">HashSet</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 定义变量 ans，用于记录最长无重复子串的长度。</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">ans</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 使用双指针（滑动窗口）方法，l 表示左边界，r 表示右边界。</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">l</span> <span class="operator">=</span> <span class="number">0</span>, r = <span class="number">0</span>; r &lt; s.length(); r++) &#123;</span><br><span class="line">            <span class="comment">// 获取当前右指针指向的字符。</span></span><br><span class="line">            <span class="type">char</span> <span class="variable">c</span> <span class="operator">=</span> ss[r];</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 如果当前字符 c 已经存在于 set 中，说明有重复字符。</span></span><br><span class="line">            <span class="comment">// 需要移动左指针 l，直到窗口内不再有重复字符。</span></span><br><span class="line">            <span class="keyword">while</span> (set.contains(c)) &#123;</span><br><span class="line">                <span class="comment">// 移除左指针指向的字符，并将左指针向右移动一位。</span></span><br><span class="line">                set.remove(ss[l]);</span><br><span class="line">                l++;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 将当前字符加入 set，表示它现在是窗口的一部分。</span></span><br><span class="line">            set.add(ss[r]);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 更新最长无重复子串的长度。</span></span><br><span class="line">            <span class="comment">// 当前窗口的长度是 r - l + 1。</span></span><br><span class="line">            ans = Math.max(ans, r - l + <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 返回最长无重复子串的长度。</span></span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h1 id="中心扩展算法"><a href="#中心扩展算法" class="headerlink" title="中心扩展算法"></a>中心扩展算法</h1><h2 id="问题-1"><a href="#问题-1" class="headerlink" title="问题"></a>问题</h2><p>给定一个字符串，请你找出其中最长回文子串</p>
 <h2 id="思路-1"><a href="#思路-1" class="headerlink" title="思路"></a>思路</h2><ul>
 <li>遍历字符串中的每个字符，将每个字符以及每两个相邻字符之间的位置视为一个潜在的回文中心。</li>
@@ -411,7 +570,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2024/08/02/%E7%AE%97%E6%B3%95/">展开全文 >></a>
+          <a class="article-more-a" href="/2024/08/02/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/">展开全文 >></a>
         </p>
       
 
