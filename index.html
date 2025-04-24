@@ -173,7 +173,7 @@
 
         
         <a href="/2024/08/03/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2%E6%96%87%E7%AB%A0/" class="archive-article-date">
-  	<time datetime="2024-08-03T02:55:11.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-08-03</time>
+  	<time datetime="2024-08-02T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-08-03</time>
 </a>
         
       </header>
@@ -230,27 +230,29 @@
 
 
   
-    <article id="post-项目" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-排序" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2025/01/24/%E9%A1%B9%E7%9B%AE/">项目</a>
+      <a class="article-title" href="/2025/04/24/%E6%8E%92%E5%BA%8F/">排序</a>
     </h1>
   
 
         
-        <a href="/2025/01/24/%E9%A1%B9%E7%9B%AE/" class="archive-article-date">
-  	<time datetime="2025-01-24T13:12:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-01-24</time>
+        <a href="/2025/04/24/%E6%8E%92%E5%BA%8F/" class="archive-article-date">
+  	<time datetime="2025-04-23T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-04-24</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h1 id="快速选择排序"><a href="#快速选择排序" class="headerlink" title="快速选择排序"></a>快速选择排序</h1><h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>给定整数数组 nums 和整数 k，请返回数组中第 k 个最大的元素。<br>请注意，你需要找的是数组排序后的第 k 个最大的元素，而不是第 k 个不同的元素。<br>你必须设计并实现时间复杂度为 O(n) 的算法解决此问题。</p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>哨兵划分+递归+三路划分+随机选择基准数</p>
+<h2 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="comment">// 快速选择算法 (QuickSelect) 的核心实现</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> <span class="title function_">quickSelect</span><span class="params">(List&lt;Integer&gt; nums, <span class="type">int</span> k)</span> &#123;</span><br><span class="line">        <span class="comment">// 使用随机数生成器，用于选择一个随机的基准值（pivot）</span></span><br><span class="line">        <span class="type">Random</span> <span class="variable">rand</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Random</span>();</span><br><span class="line">        <span class="comment">// 随机选择一个基准值</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">pivot</span> <span class="operator">=</span> nums.get(rand.nextInt(nums.size()));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 创建三个列表，分别存储比 pivot 大、小、等于的元素</span></span><br><span class="line">        List&lt;Integer&gt; big = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();   <span class="comment">// 存储大于 pivot 的元素</span></span><br><span class="line">        List&lt;Integer&gt; small = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;(); <span class="comment">// 存储小于 pivot 的元素</span></span><br><span class="line">        List&lt;Integer&gt; equal = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;(); <span class="comment">// 存储等于 pivot 的元素</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 遍历输入列表，将元素分类到 big、small 或 equal 中</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> num : nums) &#123;</span><br><span class="line">            <span class="keyword">if</span> (num &gt; pivot) &#123;</span><br><span class="line">                big.add(num);</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (num &lt; pivot) &#123;</span><br><span class="line">                small.add(num);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                equal.add(num);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果第 k 大的元素在 &quot;big&quot; 列表中，则递归在 big 列表中查找</span></span><br><span class="line">        <span class="keyword">if</span> (k &lt;= big.size()) &#123;</span><br><span class="line">            <span class="keyword">return</span> quickSelect(big, k);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果第 k 大的元素不在 &quot;big&quot; 和 &quot;equal&quot; 列表中，则递归在 &quot;small&quot; 列表中查找</span></span><br><span class="line">        <span class="keyword">if</span> (k &gt; nums.size() - small.size()) &#123;</span><br><span class="line">            <span class="keyword">return</span> quickSelect(small, k - nums.size() + small.size());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果第 k 大的元素正好是 pivot，则返回 pivot</span></span><br><span class="line">        <span class="keyword">return</span> pivot;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 主函数：找到数组中第 k 大的元素</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">findKthLargest</span><span class="params">(<span class="type">int</span>[] nums, <span class="type">int</span> k)</span> &#123;</span><br><span class="line">        <span class="comment">// 将数组转换为列表，方便后续操作</span></span><br><span class="line">        List&lt;Integer&gt; numList = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> num : nums) &#123;</span><br><span class="line">            numList.add(num);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 调用 quickSelect 方法，返回第 k 大的元素</span></span><br><span class="line">        <span class="keyword">return</span> quickSelect(numList, k);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
       
 
       
@@ -258,11 +260,346 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2025/01/24/%E9%A1%B9%E7%9B%AE/">展开全文 >></a>
+          <a class="article-more-a" href="/2025/04/24/%E6%8E%92%E5%BA%8F/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-双指针" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2025/04/24/%E5%8F%8C%E6%8C%87%E9%92%88/">双指针</a>
+    </h1>
+  
+
+        
+        <a href="/2025/04/24/%E5%8F%8C%E6%8C%87%E9%92%88/" class="archive-article-date">
+  	<time datetime="2025-04-23T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-04-24</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="典型例题"><a href="#典型例题" class="headerlink" title="典型例题"></a>典型例题</h1><h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>给你一个整数数组 nums ，判断是否存在三元组 [nums[i], nums[j], nums[k]] 满足 i !&#x3D; j、i !&#x3D; k 且 j !&#x3D; k ，同时还满足 nums[i] + nums[j] + nums[k] &#x3D;&#x3D; 0 。请你返回所有和为 0 且不重复的三元组。</p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>排序+双指针</p>
+<h2 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> List&lt;List&lt;Integer&gt;&gt; <span class="title function_">threeSum</span><span class="params">(<span class="type">int</span>[] nums)</span> &#123;</span><br><span class="line">        <span class="comment">// 1. 首先对数组进行排序，方便后续处理和去重。</span></span><br><span class="line">        Arrays.sort(nums);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 2. 创建一个结果列表，用于存储满足条件的三元组。</span></span><br><span class="line">        List&lt;List&lt;Integer&gt;&gt; ans = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 3. 遍历数组中的每个元素，将其作为第一个数（固定第一个数）。</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="comment">// 4. 如果当前元素与前一个元素相同，则跳过，避免重复计算。</span></span><br><span class="line">            <span class="keyword">if</span> (i &gt; <span class="number">0</span> &amp;&amp; nums[i] == nums[i - <span class="number">1</span>]) <span class="keyword">continue</span>;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 5. 定义双指针 l 和 r，分别指向当前元素的下一个位置和数组末尾。</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">l</span> <span class="operator">=</span> i + <span class="number">1</span>, r = nums.length - <span class="number">1</span>;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 6. 计算目标值 target，即需要找到的另外两个数的和为 -nums[i]。</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">target</span> <span class="operator">=</span> -nums[i];</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 7. 使用双指针法寻找满足条件的两个数。</span></span><br><span class="line">            <span class="keyword">while</span> (l &lt; r) &#123;</span><br><span class="line">                <span class="comment">// 8. 计算当前双指针指向的两个数的和。</span></span><br><span class="line">                <span class="type">int</span> <span class="variable">sum</span> <span class="operator">=</span> nums[l] + nums[r];</span><br><span class="line">                </span><br><span class="line">                <span class="comment">// 9. 如果和等于目标值，说明找到了一组解。</span></span><br><span class="line">                <span class="keyword">if</span> (sum == target) &#123;</span><br><span class="line">                    <span class="comment">// 将当前三元组加入结果列表。</span></span><br><span class="line">                    ans.add(Arrays.asList(nums[i], nums[l], nums[r]));</span><br><span class="line">                    </span><br><span class="line">                    <span class="comment">// 移动左右指针，继续寻找其他可能的解。</span></span><br><span class="line">                    l++;</span><br><span class="line">                    r--;</span><br><span class="line">                    </span><br><span class="line">                    <span class="comment">// 跳过重复的元素，避免产生重复的三元组。</span></span><br><span class="line">                    <span class="keyword">while</span> (l &lt; r &amp;&amp; nums[l] == nums[l - <span class="number">1</span>]) l++;</span><br><span class="line">                    <span class="keyword">while</span> (l &lt; r &amp;&amp; nums[r] == nums[r + <span class="number">1</span>]) r--;</span><br><span class="line">                &#125; </span><br><span class="line">                <span class="comment">// 10. 如果和小于目标值，说明左边的数太小，移动左指针。</span></span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (sum &lt; target) &#123;</span><br><span class="line">                    l++;</span><br><span class="line">                &#125; </span><br><span class="line">                <span class="comment">// 11. 如果和大于目标值，说明右边的数太大，移动右指针。</span></span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                    r--;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 12. 返回所有满足条件的三元组。</span></span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2025/04/24/%E5%8F%8C%E6%8C%87%E9%92%88/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-LRU缓存" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2025/04/23/LRU%E7%BC%93%E5%AD%98/">LRU缓存</a>
+    </h1>
+  
+
+        
+        <a href="/2025/04/23/LRU%E7%BC%93%E5%AD%98/" class="archive-article-date">
+  	<time datetime="2025-04-22T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-04-23</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>请你设计并实现一个满足  LRU (最近最少使用) 缓存 约束的数据结构。</p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><ol>
+<li>使用双向链表来维护键值对的顺序：链表头部表示最近使用的节点；链表尾部表示最久未使用的节点。</li>
+<li>使用哈希表来实现快速查找：键为缓存的键；值为对应的链表节点。</li>
+<li>虚拟头节点（dummy）简化了链表操作，避免处理边界条件。</li>
+</ol>
+<h2 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">LRUCache</span> &#123;</span><br><span class="line">    <span class="comment">// 定义双向链表节点类，用于存储键值对和指向前后的指针</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">        <span class="type">int</span> key, value;  <span class="comment">// 存储键值对</span></span><br><span class="line">        Node prev, next; <span class="comment">// 指向前一个节点和后一个节点的指针</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 构造函数，初始化节点</span></span><br><span class="line">        Node(<span class="type">int</span> k, <span class="type">int</span> v) &#123;</span><br><span class="line">            key = k;</span><br><span class="line">            value = v;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">int</span> capacity; <span class="comment">// 缓存的最大容量</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">Node</span> <span class="variable">dummy</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Node</span>(<span class="number">0</span>, <span class="number">0</span>); <span class="comment">// 虚拟头节点，用于简化操作</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Map&lt;Integer, Node&gt; keyToNode = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;(); <span class="comment">// 哈希表，用于快速查找节点</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 构造函数，初始化缓存容量，并设置虚拟头节点的前后指针指向自己</span></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">LRUCache</span><span class="params">(<span class="type">int</span> capacity)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.capacity = capacity;</span><br><span class="line">        dummy.prev = dummy; <span class="comment">// 初始化时，dummy 的前驱和后继都指向自己</span></span><br><span class="line">        dummy.next = dummy;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取指定键对应的值，如果不存在则返回 -1</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">get</span><span class="params">(<span class="type">int</span> key)</span> &#123;</span><br><span class="line">        <span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> getNode(key); <span class="comment">// 调用辅助方法获取节点</span></span><br><span class="line">        <span class="keyword">return</span> node != <span class="literal">null</span> ? node.value : -<span class="number">1</span>; <span class="comment">// 如果节点存在，返回其值；否则返回 -1</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 插入或更新键值对</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">put</span><span class="params">(<span class="type">int</span> key, <span class="type">int</span> value)</span> &#123;</span><br><span class="line">        <span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> getNode(key); <span class="comment">// 尝试获取节点</span></span><br><span class="line">        <span class="keyword">if</span> (node != <span class="literal">null</span>) &#123; <span class="comment">// 如果节点已存在，更新其值</span></span><br><span class="line">            node.value = value;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 如果节点不存在，创建新节点并插入到哈希表和链表中</span></span><br><span class="line">        node = <span class="keyword">new</span> <span class="title class_">Node</span>(key, value);</span><br><span class="line">        keyToNode.put(key, node); <span class="comment">// 插入哈希表</span></span><br><span class="line">        pushFront(node); <span class="comment">// 将节点插入到链表头部（表示最近使用）</span></span><br><span class="line">        <span class="keyword">if</span> (keyToNode.size() &gt; capacity) &#123; <span class="comment">// 如果超出容量，移除最久未使用的节点</span></span><br><span class="line">            <span class="type">Node</span> <span class="variable">backNode</span> <span class="operator">=</span> dummy.prev; <span class="comment">// 最久未使用的节点在链表尾部</span></span><br><span class="line">            keyToNode.remove(backNode.key); <span class="comment">// 从哈希表中移除</span></span><br><span class="line">            remove(backNode); <span class="comment">// 从链表中移除</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 辅助方法：获取指定键的节点，并将其移动到链表头部（表示最近使用）</span></span><br><span class="line">    <span class="keyword">private</span> Node <span class="title function_">getNode</span><span class="params">(<span class="type">int</span> key)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (!keyToNode.containsKey(key)) &#123; <span class="comment">// 如果键不存在，返回 null</span></span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> keyToNode.get(key); <span class="comment">// 获取节点</span></span><br><span class="line">        remove(node); <span class="comment">// 从链表中移除该节点</span></span><br><span class="line">        pushFront(node); <span class="comment">// 将节点重新插入到链表头部</span></span><br><span class="line">        <span class="keyword">return</span> node; <span class="comment">// 返回该节点</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 辅助方法：从链表中移除指定节点</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">remove</span><span class="params">(Node x)</span> &#123;</span><br><span class="line">        x.prev.next = x.next; <span class="comment">// 将前驱节点的 next 指向后继节点</span></span><br><span class="line">        x.next.prev = x.prev; <span class="comment">// 将后继节点的 prev 指向前驱节点</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 辅助方法：将指定节点插入到链表头部</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">pushFront</span><span class="params">(Node x)</span> &#123;</span><br><span class="line">        x.prev = dummy; <span class="comment">// 设置节点的前驱为虚拟头节点</span></span><br><span class="line">        x.next = dummy.next; <span class="comment">// 设置节点的后继为虚拟头节点的下一个节点</span></span><br><span class="line">        x.prev.next = x; <span class="comment">// 更新虚拟头节点的 next 指向当前节点</span></span><br><span class="line">        x.next.prev = x; <span class="comment">// 更新原第一个节点的 prev 指向当前节点</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2025/04/23/LRU%E7%BC%93%E5%AD%98/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-滑动窗口" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2025/04/23/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/">滑动窗口</a>
+    </h1>
+  
+
+        
+        <a href="/2025/04/23/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/" class="archive-article-date">
+  	<time datetime="2025-04-22T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-04-23</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="典型例题"><a href="#典型例题" class="headerlink" title="典型例题"></a>典型例题</h1><h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>给定一个字符串，请你找出其中不含有无重复字符的最长子串</p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><ol>
+<li>我们使用两个指针表示字符串中的某个子串（或窗口）的左右边界，其中左指针代表着上文中「枚举子串的起始位置」，而右指针即为不包含重复字符的最长子串的结束位置；    </li>
+<li>在每一步的操作中，我们会将左指针向右移动一格，表示我们开始枚举下一个字符作为起始位置，然后我们可以不断地向右移动右指针，但需要保证这两个指针对应的子串中没有重复的字符。在移动结束后，这个子串就对应着以左指针开始的，不包含重复字符的最长子串。我们记录下这个子串的长度； </li>
+<li>在枚举结束后，我们找到的最长的子串的长度即为答案。</li>
+</ol>
+<h2 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">lengthOfLongestSubstring</span><span class="params">(String s)</span> &#123;</span><br><span class="line">        <span class="comment">// 将输入字符串转换为字符数组，方便逐字符访问。</span></span><br><span class="line">        <span class="type">char</span>[] ss = s.toCharArray();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 使用一个 HashSet 来存储当前窗口内的字符，确保没有重复字符。</span></span><br><span class="line">        Set&lt;Character&gt; set = <span class="keyword">new</span> <span class="title class_">HashSet</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 定义变量 ans，用于记录最长无重复子串的长度。</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">ans</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 使用双指针（滑动窗口）方法，l 表示左边界，r 表示右边界。</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">l</span> <span class="operator">=</span> <span class="number">0</span>, r = <span class="number">0</span>; r &lt; s.length(); r++) &#123;</span><br><span class="line">            <span class="comment">// 获取当前右指针指向的字符。</span></span><br><span class="line">            <span class="type">char</span> <span class="variable">c</span> <span class="operator">=</span> ss[r];</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 如果当前字符 c 已经存在于 set 中，说明有重复字符。</span></span><br><span class="line">            <span class="comment">// 需要移动左指针 l，直到窗口内不再有重复字符。</span></span><br><span class="line">            <span class="keyword">while</span> (set.contains(c)) &#123;</span><br><span class="line">                <span class="comment">// 移除左指针指向的字符，并将左指针向右移动一位。</span></span><br><span class="line">                set.remove(ss[l]);</span><br><span class="line">                l++;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 将当前字符加入 set，表示它现在是窗口的一部分。</span></span><br><span class="line">            set.add(ss[r]);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 更新最长无重复子串的长度。</span></span><br><span class="line">            <span class="comment">// 当前窗口的长度是 r - l + 1。</span></span><br><span class="line">            ans = Math.max(ans, r - l + <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 返回最长无重复子串的长度。</span></span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="中心扩展算法"><a href="#中心扩展算法" class="headerlink" title="中心扩展算法"></a>中心扩展算法</h1><h2 id="问题-1"><a href="#问题-1" class="headerlink" title="问题"></a>问题</h2><p>给定一个字符串，请你找出其中最长回文子串</p>
+<h2 id="思路-1"><a href="#思路-1" class="headerlink" title="思路"></a>思路</h2><ul>
+<li>遍历字符串中的每个字符，将每个字符以及每两个相邻字符之间的位置视为一个潜在的回文中心。</li>
+<li>对于每个中心，同时向左和向右扩展，比较两侧字符是否相等。如果相等，则继续扩展；如果不相等，则停止扩展，记录下以当前中心得到的最长回文子串。</li>
+<li>在每次扩展结束后，如果找到更长的回文子串，则更新最长回文子串的记录。</li>
+<li>直到遍历完整个字符串。</li>
+</ul>
+<h2 id="示例代码-1"><a href="#示例代码-1" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">longestPalindrome</span><span class="params">(String s)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (s == <span class="literal">null</span> || s.length() &lt; <span class="number">1</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> <span class="variable">start</span> <span class="operator">=</span> <span class="number">0</span>, end = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; s.length(); i++) &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">len1</span> <span class="operator">=</span> expandAroundCenter(s, i, i);</span><br><span class="line">            <span class="type">int</span> <span class="variable">len2</span> <span class="operator">=</span> expandAroundCenter(s, i, i + <span class="number">1</span>);</span><br><span class="line">            <span class="type">int</span> <span class="variable">len</span> <span class="operator">=</span> Math.max(len1, len2);</span><br><span class="line">            <span class="keyword">if</span> (len &gt; end - start) &#123;</span><br><span class="line">                start = i - (len - <span class="number">1</span>) / <span class="number">2</span>;</span><br><span class="line">                end = i + len / <span class="number">2</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> s.substring(start, end + <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">expandAroundCenter</span><span class="params">(String s, <span class="type">int</span> left, <span class="type">int</span> right)</span> &#123;</span><br><span class="line">        <span class="keyword">while</span> (left &gt;= <span class="number">0</span> &amp;&amp; right &lt; s.length() &amp;&amp; s.charAt(left) == s.charAt(right)) &#123;</span><br><span class="line">            --left;</span><br><span class="line">            ++right;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> right - left - <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2025/04/23/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-链表" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2025/04/23/%E9%93%BE%E8%A1%A8/">链表</a>
+    </h1>
+  
+
+        
+        <a href="/2025/04/23/%E9%93%BE%E8%A1%A8/" class="archive-article-date">
+  	<time datetime="2025-04-22T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-04-23</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="典型例题"><a href="#典型例题" class="headerlink" title="典型例题"></a>典型例题</h1><h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>给你单链表的头节点 head ，请你反转链表，并返回反转后的链表。</p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><ol>
+<li>先判断head和head.next是否为空，为空直接返回。</li>
+<li>再递归调用方法至到最后一个结点。</li>
+<li>从最后一个结点开始指向前一个结点，然后更新头结点。</li>
+<li>返回新的头节点</li>
+</ol>
+<h2 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="comment">// 定义一个方法 reverseList，用于反转单链表</span></span><br><span class="line">    <span class="keyword">public</span> ListNode <span class="title function_">reverseList</span><span class="params">(ListNode head)</span> &#123;</span><br><span class="line">        <span class="comment">// 递归终止条件：</span></span><br><span class="line">        <span class="comment">// 如果当前节点为空（head == null），或者当前节点是链表的最后一个节点（head.next == null），</span></span><br><span class="line">        <span class="comment">// 则直接返回当前节点，因为不需要反转。</span></span><br><span class="line">        <span class="keyword">if</span> (head == <span class="literal">null</span> || head.next == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> head;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 递归调用 reverseList 方法，传入当前节点的下一个节点（head.next）。</span></span><br><span class="line">        <span class="comment">// 这会一直递归到链表的最后一个节点，并将其作为新的头节点（newHead）。</span></span><br><span class="line">        <span class="type">ListNode</span> <span class="variable">newHead</span> <span class="operator">=</span> reverseList(head.next);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 反转操作：</span></span><br><span class="line">        <span class="comment">// 当前节点的下一个节点（head.next）的 next 指针指向当前节点（head），</span></span><br><span class="line">        <span class="comment">// 实现了局部的链表反转。</span></span><br><span class="line">        head.next.next = head;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 将当前节点的 next 指针置为 null，避免形成环。</span></span><br><span class="line">        <span class="comment">// 这一步很重要，确保链表反转后不会出现循环引用。</span></span><br><span class="line">        head.next = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 返回新的头节点（newHead），它在递归过程中始终是原链表的最后一个节点。</span></span><br><span class="line">        <span class="keyword">return</span> newHead;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="问题-1"><a href="#问题-1" class="headerlink" title="问题"></a>问题</h2><p>给你链表的头节点 head ，每 k 个节点一组进行翻转，请你返回修改后的链表。<br>k 是一个正整数，它的值小于或等于链表的长度。如果节点总数不是 k 的整数倍，那么请将最后剩余的节点保持原有顺序。<br>你不能只是单纯的改变节点内部的值，而是需要实际进行节点交换。</p>
+<h2 id="思路-1"><a href="#思路-1" class="headerlink" title="思路"></a>思路</h2><p>递归+双指针</p>
+<h2 id="示例代码-1"><a href="#示例代码-1" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> ListNode <span class="title function_">reverseKGroup</span><span class="params">(ListNode head, <span class="type">int</span> k)</span> &#123;</span><br><span class="line">        <span class="comment">// 特殊情况处理：链表为空或 k == 1</span></span><br><span class="line">        <span class="keyword">if</span> (head == <span class="literal">null</span> || k == <span class="number">1</span>) <span class="keyword">return</span> head;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 初始化指针和计数器</span></span><br><span class="line">        <span class="type">ListNode</span> <span class="variable">pre</span> <span class="operator">=</span> head, cur = head.next;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 翻转当前组的前 k 个节点</span></span><br><span class="line">        <span class="keyword">while</span> (++n &lt; k &amp;&amp; cur != <span class="literal">null</span>) &#123;</span><br><span class="line">            pre.next = cur.next; <span class="comment">// 将 pre 的 next 指向 cur 的 next</span></span><br><span class="line">            cur.next = head;    <span class="comment">// 将 cur 插入到组头</span></span><br><span class="line">            head = cur;         <span class="comment">// 更新组头为 cur</span></span><br><span class="line">            cur = pre.next;     <span class="comment">// 更新 cur 为 pre 的 next</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果节点不足 k 个，恢复原状并递归处理</span></span><br><span class="line">        <span class="keyword">if</span> (n &lt; k) &#123;</span><br><span class="line">            <span class="keyword">return</span> reverseKGroup(head, n);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 递归处理剩余链表</span></span><br><span class="line">        pre.next = reverseKGroup(cur, k);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 返回翻转后的链表头节点</span></span><br><span class="line">        <span class="keyword">return</span> head;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2025/04/23/%E9%93%BE%E8%A1%A8/">展开全文 >></a>
         </p>
       
 
@@ -305,7 +642,7 @@
 
         
         <a href="/2025/01/24/%E5%85%AB%E8%82%A1/" class="archive-article-date">
-  	<time datetime="2025-01-24T13:12:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-01-24</time>
+  	<time datetime="2025-01-23T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-01-24</time>
 </a>
         
       </header>
@@ -354,33 +691,27 @@
 
 
   
-    <article id="post-LRU缓存" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-项目" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2024/08/02/LRU%E7%BC%93%E5%AD%98/">LRU缓存</a>
+      <a class="article-title" href="/2025/01/24/%E9%A1%B9%E7%9B%AE/">项目</a>
     </h1>
   
 
         
-        <a href="/2024/08/02/LRU%E7%BC%93%E5%AD%98/" class="archive-article-date">
-  	<time datetime="2024-08-02T10:53:47.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-08-02</time>
+        <a href="/2025/01/24/%E9%A1%B9%E7%9B%AE/" class="archive-article-date">
+  	<time datetime="2025-01-23T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-01-24</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>请你设计并实现一个满足  LRU (最近最少使用) 缓存 约束的数据结构。</p>
-<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><ol>
-<li>使用双向链表来维护键值对的顺序：链表头部表示最近使用的节点；链表尾部表示最久未使用的节点。</li>
-<li>使用哈希表来实现快速查找：键为缓存的键；值为对应的链表节点。</li>
-<li>虚拟头节点（dummy）简化了链表操作，避免处理边界条件。</li>
-</ol>
-<h2 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">LRUCache</span> &#123;</span><br><span class="line">    <span class="comment">// 定义双向链表节点类，用于存储键值对和指向前后的指针</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">        <span class="type">int</span> key, value;  <span class="comment">// 存储键值对</span></span><br><span class="line">        Node prev, next; <span class="comment">// 指向前一个节点和后一个节点的指针</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 构造函数，初始化节点</span></span><br><span class="line">        Node(<span class="type">int</span> k, <span class="type">int</span> v) &#123;</span><br><span class="line">            key = k;</span><br><span class="line">            value = v;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">int</span> capacity; <span class="comment">// 缓存的最大容量</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">Node</span> <span class="variable">dummy</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Node</span>(<span class="number">0</span>, <span class="number">0</span>); <span class="comment">// 虚拟头节点，用于简化操作</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Map&lt;Integer, Node&gt; keyToNode = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;(); <span class="comment">// 哈希表，用于快速查找节点</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 构造函数，初始化缓存容量，并设置虚拟头节点的前后指针指向自己</span></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">LRUCache</span><span class="params">(<span class="type">int</span> capacity)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.capacity = capacity;</span><br><span class="line">        dummy.prev = dummy; <span class="comment">// 初始化时，dummy 的前驱和后继都指向自己</span></span><br><span class="line">        dummy.next = dummy;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取指定键对应的值，如果不存在则返回 -1</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">get</span><span class="params">(<span class="type">int</span> key)</span> &#123;</span><br><span class="line">        <span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> getNode(key); <span class="comment">// 调用辅助方法获取节点</span></span><br><span class="line">        <span class="keyword">return</span> node != <span class="literal">null</span> ? node.value : -<span class="number">1</span>; <span class="comment">// 如果节点存在，返回其值；否则返回 -1</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 插入或更新键值对</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">put</span><span class="params">(<span class="type">int</span> key, <span class="type">int</span> value)</span> &#123;</span><br><span class="line">        <span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> getNode(key); <span class="comment">// 尝试获取节点</span></span><br><span class="line">        <span class="keyword">if</span> (node != <span class="literal">null</span>) &#123; <span class="comment">// 如果节点已存在，更新其值</span></span><br><span class="line">            node.value = value;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 如果节点不存在，创建新节点并插入到哈希表和链表中</span></span><br><span class="line">        node = <span class="keyword">new</span> <span class="title class_">Node</span>(key, value);</span><br><span class="line">        keyToNode.put(key, node); <span class="comment">// 插入哈希表</span></span><br><span class="line">        pushFront(node); <span class="comment">// 将节点插入到链表头部（表示最近使用）</span></span><br><span class="line">        <span class="keyword">if</span> (keyToNode.size() &gt; capacity) &#123; <span class="comment">// 如果超出容量，移除最久未使用的节点</span></span><br><span class="line">            <span class="type">Node</span> <span class="variable">backNode</span> <span class="operator">=</span> dummy.prev; <span class="comment">// 最久未使用的节点在链表尾部</span></span><br><span class="line">            keyToNode.remove(backNode.key); <span class="comment">// 从哈希表中移除</span></span><br><span class="line">            remove(backNode); <span class="comment">// 从链表中移除</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 辅助方法：获取指定键的节点，并将其移动到链表头部（表示最近使用）</span></span><br><span class="line">    <span class="keyword">private</span> Node <span class="title function_">getNode</span><span class="params">(<span class="type">int</span> key)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (!keyToNode.containsKey(key)) &#123; <span class="comment">// 如果键不存在，返回 null</span></span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> keyToNode.get(key); <span class="comment">// 获取节点</span></span><br><span class="line">        remove(node); <span class="comment">// 从链表中移除该节点</span></span><br><span class="line">        pushFront(node); <span class="comment">// 将节点重新插入到链表头部</span></span><br><span class="line">        <span class="keyword">return</span> node; <span class="comment">// 返回该节点</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 辅助方法：从链表中移除指定节点</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">remove</span><span class="params">(Node x)</span> &#123;</span><br><span class="line">        x.prev.next = x.next; <span class="comment">// 将前驱节点的 next 指向后继节点</span></span><br><span class="line">        x.next.prev = x.prev; <span class="comment">// 将后继节点的 prev 指向前驱节点</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 辅助方法：将指定节点插入到链表头部</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">pushFront</span><span class="params">(Node x)</span> &#123;</span><br><span class="line">        x.prev = dummy; <span class="comment">// 设置节点的前驱为虚拟头节点</span></span><br><span class="line">        x.next = dummy.next; <span class="comment">// 设置节点的后继为虚拟头节点的下一个节点</span></span><br><span class="line">        x.prev.next = x; <span class="comment">// 更新虚拟头节点的 next 指向当前节点</span></span><br><span class="line">        x.next.prev = x; <span class="comment">// 更新原第一个节点的 prev 指向当前节点</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        
       
 
       
@@ -388,189 +719,11 @@
     <div class="article-info article-info-index">
       
       
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
       
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2024/08/02/LRU%E7%BC%93%E5%AD%98/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-链表" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2024/08/02/%E9%93%BE%E8%A1%A8/">链表</a>
-    </h1>
-  
-
-        
-        <a href="/2024/08/02/%E9%93%BE%E8%A1%A8/" class="archive-article-date">
-  	<time datetime="2024-08-02T10:53:47.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-08-02</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="典型例题"><a href="#典型例题" class="headerlink" title="典型例题"></a>典型例题</h1><h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>给你单链表的头节点 head ，请你反转链表，并返回反转后的链表。</p>
-<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><ol>
-<li>先判断head和head.next是否为空，为空直接返回。</li>
-<li>再递归调用方法至到最后一个结点。</li>
-<li>从最后一个结点开始指向前一个结点，然后更新头结点。</li>
-<li>返回新的头节点</li>
-</ol>
-<h2 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="comment">// 定义一个方法 reverseList，用于反转单链表</span></span><br><span class="line">    <span class="keyword">public</span> ListNode <span class="title function_">reverseList</span><span class="params">(ListNode head)</span> &#123;</span><br><span class="line">        <span class="comment">// 递归终止条件：</span></span><br><span class="line">        <span class="comment">// 如果当前节点为空（head == null），或者当前节点是链表的最后一个节点（head.next == null），</span></span><br><span class="line">        <span class="comment">// 则直接返回当前节点，因为不需要反转。</span></span><br><span class="line">        <span class="keyword">if</span> (head == <span class="literal">null</span> || head.next == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> head;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 递归调用 reverseList 方法，传入当前节点的下一个节点（head.next）。</span></span><br><span class="line">        <span class="comment">// 这会一直递归到链表的最后一个节点，并将其作为新的头节点（newHead）。</span></span><br><span class="line">        <span class="type">ListNode</span> <span class="variable">newHead</span> <span class="operator">=</span> reverseList(head.next);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 反转操作：</span></span><br><span class="line">        <span class="comment">// 当前节点的下一个节点（head.next）的 next 指针指向当前节点（head），</span></span><br><span class="line">        <span class="comment">// 实现了局部的链表反转。</span></span><br><span class="line">        head.next.next = head;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 将当前节点的 next 指针置为 null，避免形成环。</span></span><br><span class="line">        <span class="comment">// 这一步很重要，确保链表反转后不会出现循环引用。</span></span><br><span class="line">        head.next = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 返回新的头节点（newHead），它在递归过程中始终是原链表的最后一个节点。</span></span><br><span class="line">        <span class="keyword">return</span> newHead;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2024/08/02/%E9%93%BE%E8%A1%A8/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-滑动窗口" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2024/08/02/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/">滑动窗口</a>
-    </h1>
-  
-
-        
-        <a href="/2024/08/02/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/" class="archive-article-date">
-  	<time datetime="2024-08-02T10:53:47.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-08-02</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="典型例题"><a href="#典型例题" class="headerlink" title="典型例题"></a>典型例题</h1><h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>给定一个字符串，请你找出其中不含有无重复字符的最长子串</p>
-<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><ol>
-<li>我们使用两个指针表示字符串中的某个子串（或窗口）的左右边界，其中左指针代表着上文中「枚举子串的起始位置」，而右指针即为不包含重复字符的最长子串的结束位置；    </li>
-<li>在每一步的操作中，我们会将左指针向右移动一格，表示我们开始枚举下一个字符作为起始位置，然后我们可以不断地向右移动右指针，但需要保证这两个指针对应的子串中没有重复的字符。在移动结束后，这个子串就对应着以左指针开始的，不包含重复字符的最长子串。我们记录下这个子串的长度； </li>
-<li>在枚举结束后，我们找到的最长的子串的长度即为答案。</li>
-</ol>
-<h2 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">lengthOfLongestSubstring</span><span class="params">(String s)</span> &#123;</span><br><span class="line">        <span class="comment">// 将输入字符串转换为字符数组，方便逐字符访问。</span></span><br><span class="line">        <span class="type">char</span>[] ss = s.toCharArray();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 使用一个 HashSet 来存储当前窗口内的字符，确保没有重复字符。</span></span><br><span class="line">        Set&lt;Character&gt; set = <span class="keyword">new</span> <span class="title class_">HashSet</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 定义变量 ans，用于记录最长无重复子串的长度。</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">ans</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 使用双指针（滑动窗口）方法，l 表示左边界，r 表示右边界。</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">l</span> <span class="operator">=</span> <span class="number">0</span>, r = <span class="number">0</span>; r &lt; s.length(); r++) &#123;</span><br><span class="line">            <span class="comment">// 获取当前右指针指向的字符。</span></span><br><span class="line">            <span class="type">char</span> <span class="variable">c</span> <span class="operator">=</span> ss[r];</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 如果当前字符 c 已经存在于 set 中，说明有重复字符。</span></span><br><span class="line">            <span class="comment">// 需要移动左指针 l，直到窗口内不再有重复字符。</span></span><br><span class="line">            <span class="keyword">while</span> (set.contains(c)) &#123;</span><br><span class="line">                <span class="comment">// 移除左指针指向的字符，并将左指针向右移动一位。</span></span><br><span class="line">                set.remove(ss[l]);</span><br><span class="line">                l++;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 将当前字符加入 set，表示它现在是窗口的一部分。</span></span><br><span class="line">            set.add(ss[r]);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 更新最长无重复子串的长度。</span></span><br><span class="line">            <span class="comment">// 当前窗口的长度是 r - l + 1。</span></span><br><span class="line">            ans = Math.max(ans, r - l + <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 返回最长无重复子串的长度。</span></span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="中心扩展算法"><a href="#中心扩展算法" class="headerlink" title="中心扩展算法"></a>中心扩展算法</h1><h2 id="问题-1"><a href="#问题-1" class="headerlink" title="问题"></a>问题</h2><p>给定一个字符串，请你找出其中最长回文子串</p>
-<h2 id="思路-1"><a href="#思路-1" class="headerlink" title="思路"></a>思路</h2><ul>
-<li>遍历字符串中的每个字符，将每个字符以及每两个相邻字符之间的位置视为一个潜在的回文中心。</li>
-<li>对于每个中心，同时向左和向右扩展，比较两侧字符是否相等。如果相等，则继续扩展；如果不相等，则停止扩展，记录下以当前中心得到的最长回文子串。</li>
-<li>在每次扩展结束后，如果找到更长的回文子串，则更新最长回文子串的记录。</li>
-<li>直到遍历完整个字符串。</li>
-</ul>
-<h2 id="示例代码-1"><a href="#示例代码-1" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">longestPalindrome</span><span class="params">(String s)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (s == <span class="literal">null</span> || s.length() &lt; <span class="number">1</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> <span class="variable">start</span> <span class="operator">=</span> <span class="number">0</span>, end = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; s.length(); i++) &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">len1</span> <span class="operator">=</span> expandAroundCenter(s, i, i);</span><br><span class="line">            <span class="type">int</span> <span class="variable">len2</span> <span class="operator">=</span> expandAroundCenter(s, i, i + <span class="number">1</span>);</span><br><span class="line">            <span class="type">int</span> <span class="variable">len</span> <span class="operator">=</span> Math.max(len1, len2);</span><br><span class="line">            <span class="keyword">if</span> (len &gt; end - start) &#123;</span><br><span class="line">                start = i - (len - <span class="number">1</span>) / <span class="number">2</span>;</span><br><span class="line">                end = i + len / <span class="number">2</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> s.substring(start, end + <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">expandAroundCenter</span><span class="params">(String s, <span class="type">int</span> left, <span class="type">int</span> right)</span> &#123;</span><br><span class="line">        <span class="keyword">while</span> (left &gt;= <span class="number">0</span> &amp;&amp; right &lt; s.length() &amp;&amp; s.charAt(left) == s.charAt(right)) &#123;</span><br><span class="line">            --left;</span><br><span class="line">            ++right;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> right - left - <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2024/08/02/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/">展开全文 >></a>
+          <a class="article-more-a" href="/2025/01/24/%E9%A1%B9%E7%9B%AE/">展开全文 >></a>
         </p>
       
 

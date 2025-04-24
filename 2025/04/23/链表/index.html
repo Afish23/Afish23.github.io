@@ -11,12 +11,12 @@
   <meta name="description" content="典型例题问题给你单链表的头节点 head ，请你反转链表，并返回反转后的链表。 思路 先判断head和head.next是否为空，为空直接返回。 再递归调用方法至到最后一个结点。 从最后一个结点开始指向前一个结点，然后更新头结点。 返回新的头节点  示例代码123456789101112131415161718192021222324252627class Solution &#123;    &#x2F;">
 <meta property="og:type" content="article">
 <meta property="og:title" content="链表">
-<meta property="og:url" content="http://example.com/2024/08/02/%E9%93%BE%E8%A1%A8/index.html">
+<meta property="og:url" content="http://example.com/2025/04/23/%E9%93%BE%E8%A1%A8/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="典型例题问题给你单链表的头节点 head ，请你反转链表，并返回反转后的链表。 思路 先判断head和head.next是否为空，为空直接返回。 再递归调用方法至到最后一个结点。 从最后一个结点开始指向前一个结点，然后更新头结点。 返回新的头节点  示例代码123456789101112131415161718192021222324252627class Solution &#123;    &#x2F;">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2024-08-02T10:53:47.000Z">
-<meta property="article:modified_time" content="2025-04-23T03:33:00.802Z">
+<meta property="article:published_time" content="2025-04-22T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-04-24T01:44:38.186Z">
 <meta property="article:author" content="Afish">
 <meta property="article:tag" content="算法">
 <meta name="twitter:card" content="summary">
@@ -176,8 +176,8 @@
   
 
         
-        <a href="/2024/08/02/%E9%93%BE%E8%A1%A8/" class="archive-article-date">
-  	<time datetime="2024-08-02T10:53:47.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-08-02</time>
+        <a href="/2025/04/23/%E9%93%BE%E8%A1%A8/" class="archive-article-date">
+  	<time datetime="2025-04-22T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-04-23</time>
 </a>
         
       </header>
@@ -192,6 +192,9 @@
 <li>返回新的头节点</li>
 </ol>
 <h2 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="comment">// 定义一个方法 reverseList，用于反转单链表</span></span><br><span class="line">    <span class="keyword">public</span> ListNode <span class="title function_">reverseList</span><span class="params">(ListNode head)</span> &#123;</span><br><span class="line">        <span class="comment">// 递归终止条件：</span></span><br><span class="line">        <span class="comment">// 如果当前节点为空（head == null），或者当前节点是链表的最后一个节点（head.next == null），</span></span><br><span class="line">        <span class="comment">// 则直接返回当前节点，因为不需要反转。</span></span><br><span class="line">        <span class="keyword">if</span> (head == <span class="literal">null</span> || head.next == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> head;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 递归调用 reverseList 方法，传入当前节点的下一个节点（head.next）。</span></span><br><span class="line">        <span class="comment">// 这会一直递归到链表的最后一个节点，并将其作为新的头节点（newHead）。</span></span><br><span class="line">        <span class="type">ListNode</span> <span class="variable">newHead</span> <span class="operator">=</span> reverseList(head.next);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 反转操作：</span></span><br><span class="line">        <span class="comment">// 当前节点的下一个节点（head.next）的 next 指针指向当前节点（head），</span></span><br><span class="line">        <span class="comment">// 实现了局部的链表反转。</span></span><br><span class="line">        head.next.next = head;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 将当前节点的 next 指针置为 null，避免形成环。</span></span><br><span class="line">        <span class="comment">// 这一步很重要，确保链表反转后不会出现循环引用。</span></span><br><span class="line">        head.next = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 返回新的头节点（newHead），它在递归过程中始终是原链表的最后一个节点。</span></span><br><span class="line">        <span class="keyword">return</span> newHead;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="问题-1"><a href="#问题-1" class="headerlink" title="问题"></a>问题</h2><p>给你链表的头节点 head ，每 k 个节点一组进行翻转，请你返回修改后的链表。<br>k 是一个正整数，它的值小于或等于链表的长度。如果节点总数不是 k 的整数倍，那么请将最后剩余的节点保持原有顺序。<br>你不能只是单纯的改变节点内部的值，而是需要实际进行节点交换。</p>
+<h2 id="思路-1"><a href="#思路-1" class="headerlink" title="思路"></a>思路</h2><p>递归+双指针</p>
+<h2 id="示例代码-1"><a href="#示例代码-1" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> ListNode <span class="title function_">reverseKGroup</span><span class="params">(ListNode head, <span class="type">int</span> k)</span> &#123;</span><br><span class="line">        <span class="comment">// 特殊情况处理：链表为空或 k == 1</span></span><br><span class="line">        <span class="keyword">if</span> (head == <span class="literal">null</span> || k == <span class="number">1</span>) <span class="keyword">return</span> head;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 初始化指针和计数器</span></span><br><span class="line">        <span class="type">ListNode</span> <span class="variable">pre</span> <span class="operator">=</span> head, cur = head.next;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 翻转当前组的前 k 个节点</span></span><br><span class="line">        <span class="keyword">while</span> (++n &lt; k &amp;&amp; cur != <span class="literal">null</span>) &#123;</span><br><span class="line">            pre.next = cur.next; <span class="comment">// 将 pre 的 next 指向 cur 的 next</span></span><br><span class="line">            cur.next = head;    <span class="comment">// 将 cur 插入到组头</span></span><br><span class="line">            head = cur;         <span class="comment">// 更新组头为 cur</span></span><br><span class="line">            cur = pre.next;     <span class="comment">// 更新 cur 为 pre 的 next</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果节点不足 k 个，恢复原状并递归处理</span></span><br><span class="line">        <span class="keyword">if</span> (n &lt; k) &#123;</span><br><span class="line">            <span class="keyword">return</span> reverseKGroup(head, n);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 递归处理剩余链表</span></span><br><span class="line">        pre.next = reverseKGroup(cur, k);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 返回翻转后的链表头节点</span></span><br><span class="line">        <span class="keyword">return</span> head;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
       
 
       
@@ -291,7 +294,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2024/08/02/%E9%93%BE%E8%A1%A8/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2025/04/23/%E9%93%BE%E8%A1%A8/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -305,18 +308,18 @@
   
 <nav id="article-nav">
   
-    <a href="/2024/08/02/LRU%E7%BC%93%E5%AD%98/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2025/04/23/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          LRU缓存
+          滑动窗口
         
       </div>
     </a>
   
   
-    <a href="/2024/08/02/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">滑动窗口</div>
+    <a href="/2025/01/24/%E5%85%AB%E8%82%A1/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">八股</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -343,7 +346,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%B8%E5%9E%8B%E4%BE%8B%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text">典型例题</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98"><span class="toc-number">1.1.</span> <span class="toc-text">问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF"><span class="toc-number">1.2.</span> <span class="toc-text">思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81"><span class="toc-number">1.3.</span> <span class="toc-text">示例代码</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%B8%E5%9E%8B%E4%BE%8B%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text">典型例题</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98"><span class="toc-number">1.1.</span> <span class="toc-text">问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF"><span class="toc-number">1.2.</span> <span class="toc-text">思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81"><span class="toc-number">1.3.</span> <span class="toc-text">示例代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98-1"><span class="toc-number">1.4.</span> <span class="toc-text">问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF-1"><span class="toc-number">1.5.</span> <span class="toc-text">思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81-1"><span class="toc-number">1.6.</span> <span class="toc-text">示例代码</span></a></li></ol></li></ol>
                     </div>
                 </span>
             </div>
