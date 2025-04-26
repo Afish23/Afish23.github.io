@@ -8,15 +8,15 @@
   <link rel="dns-prefetch" href="http://example.com">
   <title>LRU缓存 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="问题请你设计并实现一个满足  LRU (最近最少使用) 缓存 约束的数据结构。 思路 使用双向链表来维护键值对的顺序：链表头部表示最近使用的节点；链表尾部表示最久未使用的节点。 使用哈希表来实现快速查找：键为缓存的键；值为对应的链表节点。 虚拟头节点（dummy）简化了链表操作，避免处理边界条件。  示例代码12345678910111213141516171819202122232425262">
+  <meta name="description" content="问题">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LRU缓存">
 <meta property="og:url" content="http://example.com/2025/04/23/LRU%E7%BC%93%E5%AD%98/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="问题请你设计并实现一个满足  LRU (最近最少使用) 缓存 约束的数据结构。 思路 使用双向链表来维护键值对的顺序：链表头部表示最近使用的节点；链表尾部表示最久未使用的节点。 使用哈希表来实现快速查找：键为缓存的键；值为对应的链表节点。 虚拟头节点（dummy）简化了链表操作，避免处理边界条件。  示例代码12345678910111213141516171819202122232425262">
+<meta property="og:description" content="问题">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2025-04-22T16:00:00.000Z">
-<meta property="article:modified_time" content="2025-04-24T01:51:23.830Z">
+<meta property="article:modified_time" content="2025-04-25T03:13:49.831Z">
 <meta property="article:author" content="Afish">
 <meta property="article:tag" content="算法">
 <meta name="twitter:card" content="summary">
@@ -184,8 +184,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <span id="more"></span>
-<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>请你设计并实现一个满足  LRU (最近最少使用) 缓存 约束的数据结构。</p>
+        <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><span id="more"></span>
+<p>请你设计并实现一个满足  LRU (最近最少使用) 缓存 约束的数据结构。</p>
 <h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><ol>
 <li>使用双向链表来维护键值对的顺序：链表头部表示最近使用的节点；链表尾部表示最久未使用的节点。</li>
 <li>使用哈希表来实现快速查找：键为缓存的键；值为对应的链表节点。</li>
@@ -305,11 +305,11 @@
   
 <nav id="article-nav">
   
-    <a href="/2025/04/24/%E6%8E%92%E5%BA%8F/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2025/04/24/%E5%8F%8C%E6%8C%87%E9%92%88/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          排序
+          双指针
         
       </div>
     </a>

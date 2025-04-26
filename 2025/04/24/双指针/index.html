@@ -8,15 +8,15 @@
   <link rel="dns-prefetch" href="http://example.com">
   <title>双指针 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="典型例题问题给你一个整数数组 nums ，判断是否存在三元组 [nums[i], nums[j], nums[k]] 满足 i !&#x3D; j、i !&#x3D; k 且 j !&#x3D; k ，同时还满足 nums[i] + nums[j] + nums[k] &#x3D;&#x3D; 0 。请你返回所有和为 0 且不重复的三元组。 思路排序+双指针 示例代码12345678910111">
+  <meta name="description" content="典型例题">
 <meta property="og:type" content="article">
 <meta property="og:title" content="双指针">
 <meta property="og:url" content="http://example.com/2025/04/24/%E5%8F%8C%E6%8C%87%E9%92%88/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="典型例题问题给你一个整数数组 nums ，判断是否存在三元组 [nums[i], nums[j], nums[k]] 满足 i !&#x3D; j、i !&#x3D; k 且 j !&#x3D; k ，同时还满足 nums[i] + nums[j] + nums[k] &#x3D;&#x3D; 0 。请你返回所有和为 0 且不重复的三元组。 思路排序+双指针 示例代码12345678910111">
+<meta property="og:description" content="典型例题">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2025-04-23T16:00:00.000Z">
-<meta property="article:modified_time" content="2025-04-25T02:28:01.478Z">
+<meta property="article:modified_time" content="2025-04-25T03:13:49.831Z">
 <meta property="article:author" content="Afish">
 <meta property="article:tag" content="算法">
 <meta name="twitter:card" content="summary">
@@ -184,8 +184,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <span id="more"></span>
-<h1 id="典型例题"><a href="#典型例题" class="headerlink" title="典型例题"></a>典型例题</h1><h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>给你一个整数数组 nums ，判断是否存在三元组 [nums[i], nums[j], nums[k]] 满足 i !&#x3D; j、i !&#x3D; k 且 j !&#x3D; k ，同时还满足 nums[i] + nums[j] + nums[k] &#x3D;&#x3D; 0 。请你返回所有和为 0 且不重复的三元组。</p>
+        <h1 id="典型例题"><a href="#典型例题" class="headerlink" title="典型例题"></a>典型例题</h1><span id="more"></span>
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>给你一个整数数组 nums ，判断是否存在三元组 [nums[i], nums[j], nums[k]] 满足 i !&#x3D; j、i !&#x3D; k 且 j !&#x3D; k ，同时还满足 nums[i] + nums[j] + nums[k] &#x3D;&#x3D; 0 。请你返回所有和为 0 且不重复的三元组。</p>
 <h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>排序+双指针</p>
 <h2 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> List&lt;List&lt;Integer&gt;&gt; <span class="title function_">threeSum</span><span class="params">(<span class="type">int</span>[] nums)</span> &#123;</span><br><span class="line">        <span class="comment">// 1. 首先对数组进行排序，方便后续处理和去重。</span></span><br><span class="line">        Arrays.sort(nums);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 2. 创建一个结果列表，用于存储满足条件的三元组。</span></span><br><span class="line">        List&lt;List&lt;Integer&gt;&gt; ans = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 3. 遍历数组中的每个元素，将其作为第一个数（固定第一个数）。</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="comment">// 4. 如果当前元素与前一个元素相同，则跳过，避免重复计算。</span></span><br><span class="line">            <span class="keyword">if</span> (i &gt; <span class="number">0</span> &amp;&amp; nums[i] == nums[i - <span class="number">1</span>]) <span class="keyword">continue</span>;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 5. 定义双指针 l 和 r，分别指向当前元素的下一个位置和数组末尾。</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">l</span> <span class="operator">=</span> i + <span class="number">1</span>, r = nums.length - <span class="number">1</span>;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 6. 计算目标值 target，即需要找到的另外两个数的和为 -nums[i]。</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">target</span> <span class="operator">=</span> -nums[i];</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 7. 使用双指针法寻找满足条件的两个数。</span></span><br><span class="line">            <span class="keyword">while</span> (l &lt; r) &#123;</span><br><span class="line">                <span class="comment">// 8. 计算当前双指针指向的两个数的和。</span></span><br><span class="line">                <span class="type">int</span> <span class="variable">sum</span> <span class="operator">=</span> nums[l] + nums[r];</span><br><span class="line">                </span><br><span class="line">                <span class="comment">// 9. 如果和等于目标值，说明找到了一组解。</span></span><br><span class="line">                <span class="keyword">if</span> (sum == target) &#123;</span><br><span class="line">                    <span class="comment">// 将当前三元组加入结果列表。</span></span><br><span class="line">                    ans.add(Arrays.asList(nums[i], nums[l], nums[r]));</span><br><span class="line">                    </span><br><span class="line">                    <span class="comment">// 移动左右指针，继续寻找其他可能的解。</span></span><br><span class="line">                    l++;</span><br><span class="line">                    r--;</span><br><span class="line">                    </span><br><span class="line">                    <span class="comment">// 跳过重复的元素，避免产生重复的三元组。</span></span><br><span class="line">                    <span class="keyword">while</span> (l &lt; r &amp;&amp; nums[l] == nums[l - <span class="number">1</span>]) l++;</span><br><span class="line">                    <span class="keyword">while</span> (l &lt; r &amp;&amp; nums[r] == nums[r + <span class="number">1</span>]) r--;</span><br><span class="line">                &#125; </span><br><span class="line">                <span class="comment">// 10. 如果和小于目标值，说明左边的数太小，移动左指针。</span></span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (sum &lt; target) &#123;</span><br><span class="line">                    l++;</span><br><span class="line">                &#125; </span><br><span class="line">                <span class="comment">// 11. 如果和大于目标值，说明右边的数太大，移动右指针。</span></span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                    r--;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 12. 返回所有满足条件的三元组。</span></span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
       
@@ -301,18 +301,18 @@
   
 <nav id="article-nav">
   
-    <a href="/2025/04/25/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2025/04/24/%E6%8E%92%E5%BA%8F/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          动态规划
+          排序
         
       </div>
     </a>
   
   
-    <a href="/2025/04/24/%E6%8E%92%E5%BA%8F/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">排序</div>
+    <a href="/2025/04/23/LRU%E7%BC%93%E5%AD%98/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">LRU缓存</div>
       <i class="icon-circle-right"></i>
     </a>
   
