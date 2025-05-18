@@ -6,15 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://example.com">
-  <title>Archives: 2024 | Hexo</title>
+  <title>BirdFun | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://example.com/archives/2024/index.html">
+  <meta name="description" content="BirdFun">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BirdFun">
+<meta property="og:url" content="http://example.com/2025/03/24/BirdFun/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="BirdFun">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/BirdFun.assets/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8%E5%85%B3%E7%B3%BB.jpg">
+<meta property="article:published_time" content="2025-03-23T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-05-18T13:12:36.329Z">
 <meta property="article:author" content="Afish">
+<meta property="article:tag" content="项目">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/BirdFun.assets/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8%E5%85%B3%E7%B3%BB.jpg">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -159,48 +166,208 @@
           </div>
           <div id="js-content" class="content-ll">
             
-  
-  
+<article id="post-BirdFun" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2024" class="archive-year">2024</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/08/03/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2%E6%96%87%E7%AB%A0/" class="archive-article-date">
-  	<time datetime="2024-08-02T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-08-03</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/08/03/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2%E6%96%87%E7%AB%A0/">我的第一篇博客文章</a>
+    <h1 class="article-title" itemprop="name">
+      BirdFun
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
+        
+        <a href="/2025/03/24/BirdFun/" class="archive-article-date">
+  	<time datetime="2025-03-23T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2025-03-24</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="BirdFun"><a href="#BirdFun" class="headerlink" title="BirdFun"></a>BirdFun</h1><span id="more"></span>
+<h2 id="总体架构"><a href="#总体架构" class="headerlink" title="总体架构"></a>总体架构</h2><p><img src="/BirdFun.assets/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8%E5%85%B3%E7%B3%BB.jpg" alt="微服务调用关系"></p>
+<h2 id="功能1"><a href="#功能1" class="headerlink" title="功能1"></a>功能1</h2><p>继承AbstractGatewayFilterFactory，重写apply方法，对白名单中的URL（如登录认证）直接放行，其他URL进行Token验证，不存在则抛出业务异常，存在则放行。</p>
+<h2 id="功能2"><a href="#功能2" class="headerlink" title="功能2"></a>功能2</h2><p>HLS（HTTP Live Streaming）:</p>
+<ul>
+<li>编码与分段：源视频或音频首先被编码为H.264或HEVC格式，然后根据设定的时间长度（通常是2到10秒）分割成一系列的小文件（.ts文件）。</li>
+<li>生成索引文件：创建一个m3u8格式的索引文件，其中包含了指向这些小文件的URL列表。播放器通过下载这个索引文件来获取实际的媒体文件地址。</li>
+<li>传输：这些小文件通过普通的HTTP&#x2F;HTTPS协议传输给客户端。</li>
+<li>播放：客户端播放器读取m3u8文件，并按顺序请求和播放对应的.ts文件。<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">AliyunOSSComponent</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// 创建自定义线程池</span></span><br><span class="line">        <span class="built_in">this</span>.executorService = ThreadPoolUtils.createIoIntensiveThreadPool(<span class="string">&quot;aliyun-OSS-upload-&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 异步上传单个文件到OSS</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"> <span class="keyword">private</span> CompletableFuture&lt;Void&gt; <span class="title function_">uploadFileAsync</span><span class="params">(File file)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> CompletableFuture.runAsync(() -&gt; &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                AliyunOSSComponent.upload(file.getPath(), file.getName());</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, executorService);</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 批量异步上传TS文件和M3U8索引文件</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"><span class="keyword">public</span> CompletableFuture&lt;Void&gt; <span class="title function_">uploadFilesToOSSAsync</span><span class="params">(File tsFolder)</span> &#123;</span><br><span class="line">        <span class="type">File</span> <span class="variable">m3u8File</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">File</span>(tsFolder.getPath() + <span class="string">&quot;/&quot;</span> + Constants.M3U8_NAME);</span><br><span class="line">        List&lt;CompletableFuture&lt;Void&gt;&gt; futures = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 添加M3U8索引文件上传任务</span></span><br><span class="line">        <span class="keyword">if</span> (m3u8File.exists()) &#123;</span><br><span class="line">            futures.add(uploadFileAsync(m3u8File);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 添加所有TS文件上传任务</span></span><br><span class="line">        File[] files = tsFolder.listFiles((dir, name) -&gt; name.endsWith(<span class="string">&quot;.ts&quot;</span>));</span><br><span class="line">        <span class="keyword">if</span> (files != <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">for</span> (File file : files) &#123;</span><br><span class="line">                futures.add(uploadFileAsync(file));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 等待所有上传任务完成</span></span><br><span class="line">        <span class="keyword">return</span> CompletableFuture.allOf(futures.toArray(<span class="keyword">new</span> <span class="title class_">CompletableFuture</span>[<span class="number">0</span>]));</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">// 关闭线程池</span></span><br><span class="line">ThreadPoolUtils.shutdownAll();</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="功能3"><a href="#功能3" class="headerlink" title="功能3"></a>功能3</h2><h2 id="功能4"><a href="#功能4" class="headerlink" title="功能4"></a>功能4</h2><h2 id="功能5"><a href="#功能5" class="headerlink" title="功能5"></a>功能5</h2><h2 id="功能6"><a href="#功能6" class="headerlink" title="功能6"></a>功能6</h2><h2 id="功能7"><a href="#功能7" class="headerlink" title="功能7"></a>功能7</h2>
+      
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/assets/alipay.jpg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/assets/wechat.jpg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">项目</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2025/03/24/BirdFun/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2025/04/23/%E9%93%BE%E8%A1%A8/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          链表
+        
+      </div>
+    </a>
   
   
-    </div></section>
+    <a href="/2025/01/24/FishRPC/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">FishRPC</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#BirdFun"><span class="toc-number">1.</span> <span class="toc-text">BirdFun</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="toc-number">1.1.</span> <span class="toc-text">总体架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD1"><span class="toc-number">1.2.</span> <span class="toc-text">功能1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD2"><span class="toc-number">1.3.</span> <span class="toc-text">功能2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD3"><span class="toc-number">1.4.</span> <span class="toc-text">功能3</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD4"><span class="toc-number">1.5.</span> <span class="toc-text">功能4</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD5"><span class="toc-number">1.6.</span> <span class="toc-text">功能5</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD6"><span class="toc-number">1.7.</span> <span class="toc-text">功能6</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD7"><span class="toc-number">1.8.</span> <span class="toc-text">功能7</span></a></li></ol></li></ol>
+                    </div>
+                </span>
+            </div>
+        </div>
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -227,8 +394,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
