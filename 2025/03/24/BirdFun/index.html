@@ -15,14 +15,14 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="BirdFun">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://example.com/BirdFun.assets/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8%E5%85%B3%E7%B3%BB.jpg">
-<meta property="og:image" content="http://example.com/BirdFun.assets/RRateLimiter%E9%99%90%E6%B5%81%E5%AE%9E%E7%8E%B0%E6%B5%81%E7%A8%8B%E5%9B%BE.png">
+<meta property="og:image" content="http://example.com/assets/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8%E5%85%B3%E7%B3%BB.jpg">
+<meta property="og:image" content="http://example.com/assets/RRateLimiter%E9%99%90%E6%B5%81%E5%AE%9E%E7%8E%B0%E6%B5%81%E7%A8%8B%E5%9B%BE.png">
 <meta property="article:published_time" content="2025-03-23T16:00:00.000Z">
-<meta property="article:modified_time" content="2025-05-24T12:11:55.534Z">
+<meta property="article:modified_time" content="2025-05-24T12:21:56.894Z">
 <meta property="article:author" content="Afish">
 <meta property="article:tag" content="项目">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/BirdFun.assets/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8%E5%85%B3%E7%B3%BB.jpg">
+<meta name="twitter:image" content="http://example.com/assets/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8%E5%85%B3%E7%B3%BB.jpg">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -188,7 +188,7 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="BirdFun"><a href="#BirdFun" class="headerlink" title="BirdFun"></a>BirdFun</h1><span id="more"></span>
-<h2 id="总体架构"><a href="#总体架构" class="headerlink" title="总体架构"></a>总体架构</h2><p><img src="/BirdFun.assets/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8%E5%85%B3%E7%B3%BB.jpg" alt="微服务调用关系"></p>
+<h2 id="总体架构"><a href="#总体架构" class="headerlink" title="总体架构"></a>总体架构</h2><p><img src="/assets/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8%E5%85%B3%E7%B3%BB.jpg" alt="微服务调用关系"></p>
 <h2 id="功能1"><a href="#功能1" class="headerlink" title="功能1"></a>功能1</h2><h3 id="微服务拆分时，你是如何划分服务边界和定义接口规范的？如何避免循环依赖？"><a href="#微服务拆分时，你是如何划分服务边界和定义接口规范的？如何避免循环依赖？" class="headerlink" title="微服务拆分时，你是如何划分服务边界和定义接口规范的？如何避免循环依赖？"></a>微服务拆分时，你是如何划分服务边界和定义接口规范的？如何避免循环依赖？</h3><ul>
 <li>根据业务功能将系统划分为不同的模块，每个模块对应一个或多个微服务。例如，在图中可以看到有birdfun-cloud-interact和birdfun-cloud-resource等服务，它们分别负责互动和资源相关的功能。</li>
 <li>采用RESTful风格设计API，明确HTTP动词的使用，如GET用于查询、POST用于创建、PUT用于更新、DELETE用于删除。</li>
@@ -305,7 +305,7 @@
 <li>可以利用Redis作为分布式锁或者计数器的基础。每个请求到达时，都会对特定键的计数器增加。如果计数超过了设定的阈值，则拒绝请求。</li>
 </ul>
 <h3 id="令牌桶与滑动窗口限流算法如何选择？Redisson的RRateLimiter实现原理？"><a href="#令牌桶与滑动窗口限流算法如何选择？Redisson的RRateLimiter实现原理？" class="headerlink" title="令牌桶与滑动窗口限流算法如何选择？Redisson的RRateLimiter实现原理？"></a>令牌桶与滑动窗口限流算法如何选择？Redisson的RRateLimiter实现原理？</h3><ul>
-<li>如果需要平滑的流量控制并能容忍短期的流量爆发，选择令牌桶；如果希望严格限制任何时刻的流量不超过某个阈值，则滑动窗口可能更适合。<br><img src="/BirdFun.assets/RRateLimiter%E9%99%90%E6%B5%81%E5%AE%9E%E7%8E%B0%E6%B5%81%E7%A8%8B%E5%9B%BE.png" alt="RRateLimiter限流实现流程图"></li>
+<li>如果需要平滑的流量控制并能容忍短期的流量爆发，选择令牌桶；如果希望严格限制任何时刻的流量不超过某个阈值，则滑动窗口可能更适合。<br><img src="/assets/RRateLimiter%E9%99%90%E6%B5%81%E5%AE%9E%E7%8E%B0%E6%B5%81%E7%A8%8B%E5%9B%BE.png" alt="RRateLimiter限流实现流程图"></li>
 </ul>
 <h2 id="功能7"><a href="#功能7" class="headerlink" title="功能7"></a>功能7</h2><h3 id="Seata-AT模式全局锁如何避免脏写？回滚日志存储格式是什么？"><a href="#Seata-AT模式全局锁如何避免脏写？回滚日志存储格式是什么？" class="headerlink" title="Seata AT模式全局锁如何避免脏写？回滚日志存储格式是什么？"></a>Seata AT模式全局锁如何避免脏写？回滚日志存储格式是什么？</h3><ul>
 <li>当事务开始对某个数据库表进行更新操作时，Seata客户端会向TC（Transaction Coordinator，事务协调器）申请对应的全局锁。</li>
