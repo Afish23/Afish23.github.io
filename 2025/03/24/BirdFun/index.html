@@ -16,8 +16,9 @@
 <meta property="og:description" content="BirdFun">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://example.com/BirdFun.assets/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8%E5%85%B3%E7%B3%BB.jpg">
+<meta property="og:image" content="http://example.com/BirdFun.assets/RRateLimiter%E9%99%90%E6%B5%81%E5%AE%9E%E7%8E%B0%E6%B5%81%E7%A8%8B%E5%9B%BE.png">
 <meta property="article:published_time" content="2025-03-23T16:00:00.000Z">
-<meta property="article:modified_time" content="2025-05-18T13:12:36.329Z">
+<meta property="article:modified_time" content="2025-05-24T12:11:55.534Z">
 <meta property="article:author" content="Afish">
 <meta property="article:tag" content="项目">
 <meta name="twitter:card" content="summary">
@@ -188,15 +189,144 @@
       
         <h1 id="BirdFun"><a href="#BirdFun" class="headerlink" title="BirdFun"></a>BirdFun</h1><span id="more"></span>
 <h2 id="总体架构"><a href="#总体架构" class="headerlink" title="总体架构"></a>总体架构</h2><p><img src="/BirdFun.assets/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8%E5%85%B3%E7%B3%BB.jpg" alt="微服务调用关系"></p>
-<h2 id="功能1"><a href="#功能1" class="headerlink" title="功能1"></a>功能1</h2><p>继承AbstractGatewayFilterFactory，重写apply方法，对白名单中的URL（如登录认证）直接放行，其他URL进行Token验证，不存在则抛出业务异常，存在则放行。</p>
-<h2 id="功能2"><a href="#功能2" class="headerlink" title="功能2"></a>功能2</h2><p>HLS（HTTP Live Streaming）:</p>
-<ul>
-<li>编码与分段：源视频或音频首先被编码为H.264或HEVC格式，然后根据设定的时间长度（通常是2到10秒）分割成一系列的小文件（.ts文件）。</li>
-<li>生成索引文件：创建一个m3u8格式的索引文件，其中包含了指向这些小文件的URL列表。播放器通过下载这个索引文件来获取实际的媒体文件地址。</li>
-<li>传输：这些小文件通过普通的HTTP&#x2F;HTTPS协议传输给客户端。</li>
-<li>播放：客户端播放器读取m3u8文件，并按顺序请求和播放对应的.ts文件。<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">AliyunOSSComponent</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// 创建自定义线程池</span></span><br><span class="line">        <span class="built_in">this</span>.executorService = ThreadPoolUtils.createIoIntensiveThreadPool(<span class="string">&quot;aliyun-OSS-upload-&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 异步上传单个文件到OSS</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"> <span class="keyword">private</span> CompletableFuture&lt;Void&gt; <span class="title function_">uploadFileAsync</span><span class="params">(File file)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> CompletableFuture.runAsync(() -&gt; &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                AliyunOSSComponent.upload(file.getPath(), file.getName());</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, executorService);</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 批量异步上传TS文件和M3U8索引文件</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"><span class="keyword">public</span> CompletableFuture&lt;Void&gt; <span class="title function_">uploadFilesToOSSAsync</span><span class="params">(File tsFolder)</span> &#123;</span><br><span class="line">        <span class="type">File</span> <span class="variable">m3u8File</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">File</span>(tsFolder.getPath() + <span class="string">&quot;/&quot;</span> + Constants.M3U8_NAME);</span><br><span class="line">        List&lt;CompletableFuture&lt;Void&gt;&gt; futures = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 添加M3U8索引文件上传任务</span></span><br><span class="line">        <span class="keyword">if</span> (m3u8File.exists()) &#123;</span><br><span class="line">            futures.add(uploadFileAsync(m3u8File);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 添加所有TS文件上传任务</span></span><br><span class="line">        File[] files = tsFolder.listFiles((dir, name) -&gt; name.endsWith(<span class="string">&quot;.ts&quot;</span>));</span><br><span class="line">        <span class="keyword">if</span> (files != <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">for</span> (File file : files) &#123;</span><br><span class="line">                futures.add(uploadFileAsync(file));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 等待所有上传任务完成</span></span><br><span class="line">        <span class="keyword">return</span> CompletableFuture.allOf(futures.toArray(<span class="keyword">new</span> <span class="title class_">CompletableFuture</span>[<span class="number">0</span>]));</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">// 关闭线程池</span></span><br><span class="line">ThreadPoolUtils.shutdownAll();</span><br></pre></td></tr></table></figure></li>
+<h2 id="功能1"><a href="#功能1" class="headerlink" title="功能1"></a>功能1</h2><h3 id="微服务拆分时，你是如何划分服务边界和定义接口规范的？如何避免循环依赖？"><a href="#微服务拆分时，你是如何划分服务边界和定义接口规范的？如何避免循环依赖？" class="headerlink" title="微服务拆分时，你是如何划分服务边界和定义接口规范的？如何避免循环依赖？"></a>微服务拆分时，你是如何划分服务边界和定义接口规范的？如何避免循环依赖？</h3><ul>
+<li>根据业务功能将系统划分为不同的模块，每个模块对应一个或多个微服务。例如，在图中可以看到有birdfun-cloud-interact和birdfun-cloud-resource等服务，它们分别负责互动和资源相关的功能。</li>
+<li>采用RESTful风格设计API，明确HTTP动词的使用，如GET用于查询、POST用于创建、PUT用于更新、DELETE用于删除。</li>
+<li>采用依赖倒置原则‌，通过使用接口来描述微服务之间的交互，实现松耦合，如birdfun-cloud-interact专注于处理用户的互动行为，提供评论和弹幕相关的服务接口。</li>
 </ul>
-<h2 id="功能3"><a href="#功能3" class="headerlink" title="功能3"></a>功能3</h2><h2 id="功能4"><a href="#功能4" class="headerlink" title="功能4"></a>功能4</h2><h2 id="功能5"><a href="#功能5" class="headerlink" title="功能5"></a>功能5</h2><h2 id="功能6"><a href="#功能6" class="headerlink" title="功能6"></a>功能6</h2><h2 id="功能7"><a href="#功能7" class="headerlink" title="功能7"></a>功能7</h2>
+<h3 id="Nacos与Eureka在CAP理论上的区别是什么？Nacos如何实现配置中心动态刷新？"><a href="#Nacos与Eureka在CAP理论上的区别是什么？Nacos如何实现配置中心动态刷新？" class="headerlink" title="Nacos与Eureka在CAP理论上的区别是什么？Nacos如何实现配置中心动态刷新？"></a>Nacos与Eureka在CAP理论上的区别是什么？Nacos如何实现配置中心动态刷新？</h3><ul>
+<li>CAP: 一致性（Consistency, C）、可用性（Availability, A）和分区容错性（Partition tolerance, P）</li>
+<li>Eureka主要关注的是AP，而Nacos支持CP和AP两种模式。Nacos通过客户端注册时设置是否为临时实例（ephemeral属性）来识别选择CP或AP模式。如果是临时实例（ephemeral&#x3D;true），那么Nacos集群对该客户端节点的效果就是AP；反之，则是CP。</li>
+<li>在Spring Boot中通过注解和设置autoRefreshed &#x3D; true参数开启自动刷新功能，Nacos服务端会存储所有配置信息，Nacos客户端会监听配置变化，收到更新通知后，会立刻获取最新的配置并更新到本地环境，进而更新应用中的相关属性值。</li>
+</ul>
+<h3 id="服务注册延迟导致调用失败，如何排查？如何设计服务熔断策略？"><a href="#服务注册延迟导致调用失败，如何排查？如何设计服务熔断策略？" class="headerlink" title="服务注册延迟导致调用失败，如何排查？如何设计服务熔断策略？"></a>服务注册延迟导致调用失败，如何排查？如何设计服务熔断策略？</h3><ul>
+<li>先通过日志看服务是否成功注册，是不是配置错误，然后检查网络状况和服务器状况。</li>
+<li>设定一个请求失败的阈值，当在一定时间内达到这个阈值时，触发熔断器打开。</li>
+<li>熔断器设置三种模式：</li>
+<li>关闭状态：正常处理请求。</li>
+<li>打开状态：直接返回失败响应，不尝试执行实际操作，减少不必要的资源消耗。</li>
+<li>半开状态：经过一段时间后，允许部分请求通过以测试系统是否恢复正常。</li>
+</ul>
+<h3 id="网关层如何防止重放攻击？如何实现接口访问频次控制？"><a href="#网关层如何防止重放攻击？如何实现接口访问频次控制？" class="headerlink" title="网关层如何防止重放攻击？如何实现接口访问频次控制？"></a>网关层如何防止重放攻击？如何实现接口访问频次控制？</h3><ul>
+<li>客户端在请求中加入时间戳，服务端接收到请求后检查该时间戳是否在合理的时间窗口内。如果不在，则认为是重放攻击并拒绝请求。</li>
+<li>每次请求都包含一个唯一的nonce值，服务端维护已接收的nonce列表，并拒绝重复的nonce请求。</li>
+<li>令牌桶算法限流：为每个用户或IP地址分配一个“令牌桶”，每秒生成固定数量的令牌。每次请求消耗一个令牌，若无令牌可用则拒绝请求。可以灵活调整速率限制策略。</li>
+</ul>
+<h2 id="功能2"><a href="#功能2" class="headerlink" title="功能2"></a>功能2</h2><h3 id="FFmpeg转HLS时如何控制分片时长？如何保证音画同步？"><a href="#FFmpeg转HLS时如何控制分片时长？如何保证音画同步？" class="headerlink" title="FFmpeg转HLS时如何控制分片时长？如何保证音画同步？"></a>FFmpeg转HLS时如何控制分片时长？如何保证音画同步？</h3><ul>
+<li>使用 -hls_time 参数指定每个分片的目标长度（以秒为单位）</li>
+<li>选择并正确配置合适的音频和视频编码器，确保视频中的关键帧间隔适中且一致。</li>
+</ul>
+<h3 id="自定义线程池的核心参数如何设置？如何避免OOM？CompletableFuture异常如何处理？"><a href="#自定义线程池的核心参数如何设置？如何避免OOM？CompletableFuture异常如何处理？" class="headerlink" title="自定义线程池的核心参数如何设置？如何避免OOM？CompletableFuture异常如何处理？"></a>自定义线程池的核心参数如何设置？如何避免OOM？CompletableFuture异常如何处理？</h3><ul>
+<li>corePoolSize：核心线程数。即使线程空闲也不会回收的最小线程数量。因为上传文件是IO密集型任务，因此核心线程数设置为CPU核数*2。</li>
+<li>maximumPoolSize：最大线程数。线程池允许创建的最大线程数量。</li>
+<li>keepAliveTime：当线程数超过核心线程数时，多余的空闲线程的存活时间，超过这个时间将被终止。设置为60秒。</li>
+<li>unit：表示keepAliveTime的时间单位。设置为秒。</li>
+<li>workQueue：用于保存等待执行的任务的队列。常见的有SynchronousQueue、LinkedBlockingQueue和ArrayBlockingQueue等。使用ArrayBlockingQueue，任务队列长度设置为128。</li>
+<li>合理配置线程池大小，使用适当的阻塞队列类型。</li>
+<li>使用 whenComplete 方法可以在任务完成时触发回调函数，并正确地处理异常，而不是让异常被吞噬或丢失。</li>
+<li>使用 exceptionally 方法可以处理异常并重新抛出，以便异常能够传播到后续阶段，而不是让异常被忽略或终止。</li>
+<li>使用 handle 方法可以处理正常的返回结果和异常，并返回一个新的结果，而不是让异常影响正常的业务逻辑。</li>
+<li>使用 CompletableFuture.allOf 方法可以组合多个 CompletableFuture，并统一处理所有任务的异常，而不是让异常处理过于冗长或重复。</li>
+</ul>
+<h3 id="断点续传功能在OSS上传中如何实现？如何保证分片上传的原子性？"><a href="#断点续传功能在OSS上传中如何实现？如何保证分片上传的原子性？" class="headerlink" title="断点续传功能在OSS上传中如何实现？如何保证分片上传的原子性？"></a>断点续传功能在OSS上传中如何实现？如何保证分片上传的原子性？</h3><ul>
+<li>初始化分片上传：调用Initiate Multipart Upload接口，为要上传的文件创建一个新的分片上传事件，并获取该事件的唯一标识符（Upload ID）。</li>
+<li>上传分片：使用获得的Upload ID，通过Upload Part接口上传文件的各个分片。每个分片都有一个分片号和Etag值，用于后续操作中的标识。</li>
+<li>完成或终止分片上传：所有分片上传完成后，调用Complete Multipart Upload接口合并这些分片，形成最终的对象。</li>
+<li>在执行Complete Multipart Upload请求之前，所有的分片只是单独存在OSS上，并不会自动组合成最终的文件。只有当Complete Multipart Upload被成功调用后，OSS才会根据提供的分片列表将它们组合成完整的对象。如果因为某些原因需要取消上传或出现错误，则可以调用Abort Multipart Upload接口删除已上传的分片。</li>
+</ul>
+<h3 id="视频转码耗时过长，如何通过硬件加速（如GPU）优化？如何设计进度监控？"><a href="#视频转码耗时过长，如何通过硬件加速（如GPU）优化？如何设计进度监控？" class="headerlink" title="视频转码耗时过长，如何通过硬件加速（如GPU）优化？如何设计进度监控？"></a>视频转码耗时过长，如何通过硬件加速（如GPU）优化？如何设计进度监控？</h3><ul>
+<li>确保使用支持硬件加速的视频编码器，如果有多个GPU，可以通过分配不同的任务到不同的GPU上来进一步提高性能。</li>
+<li>通过添加-progress参数将进度信息输出到一个文件或URL，然后从这里读取进度数据。</li>
+</ul>
+<h2 id="功能3"><a href="#功能3" class="headerlink" title="功能3"></a>功能3</h2><h3 id="Kafka如何保证视频处理任务的顺序性？分区策略如何设计？"><a href="#Kafka如何保证视频处理任务的顺序性？分区策略如何设计？" class="headerlink" title="Kafka如何保证视频处理任务的顺序性？分区策略如何设计？"></a>Kafka如何保证视频处理任务的顺序性？分区策略如何设计？</h3><ul>
+<li>消息在被追加到 Partition(分区)的时候都会分配一个特定的偏移量（offset）。Kafka 通过偏移量（offset）来保证消息在分区内的顺序性。可以根据视频处理任务的特点选择如视频ID为key，并通过该key对消息进行分区。这样，与特定视频相关的所有任务都会被路由到相同的分区，从而保证这些任务之间的顺序性，同时允许不同视频的任务在不同的分区中并行处理。</li>
+</ul>
+<h3 id="Kafka-如何保证消息不丢失？"><a href="#Kafka-如何保证消息不丢失？" class="headerlink" title="Kafka 如何保证消息不丢失？"></a>Kafka 如何保证消息不丢失？</h3><ul>
+<li>生产者丢失消息的情况：添加回调函数，消息发送失败的话，检查失败的原因之后重新发送。</li>
+<li>消费者丢失消息的情况：通过设置消费者组，确保每个消费者组只有一个消费者消费到该消息。如果某个消费者挂了，那么另一个消费者会继续消费该消息。</li>
+<li>Kafka 弄丢了消息的情况：</li>
+<li>设置 acks &#x3D; all，只有所有 ISR 列表（分区的“族谱”，记录了当前的leader（族长）以及其他follower（族人）‌）的副本全部收到消息时，生产者才会接收到来自服务器的响应. 这种模式是最高级别的，也是最安全的，可以确保不止一个 Broker 接收到了消息. 该模式的延迟会很高。</li>
+<li>设置 replication.factor &gt;&#x3D; 3，保证 leader 副本能有 follower 副本能同步消息，保证每个 分区(partition) 至少有 3 个副本。虽然造成了数据冗余，但是带来了数据的安全性。</li>
+<li>设置 min.insync.replicas &gt; 1，消息至少要被写入到 2 个副本才算是被成功发送。推荐设置成 replication.factor &#x3D; min.insync.replicas + 1。</li>
+</ul>
+<h3 id="消费者提交offset的机制是什么？如何避免重复消费？"><a href="#消费者提交offset的机制是什么？如何避免重复消费？" class="headerlink" title="消费者提交offset的机制是什么？如何避免重复消费？"></a>消费者提交offset的机制是什么？如何避免重复消费？</h3><ul>
+<li>自动提交：Kafka客户端会在后台定期自动提交当前消费的offset。默认情况下，这个周期是5秒一次。</li>
+<li>手动提交：消费者可以显式调用commitSync()（同步提交）或commitAsync()（异步提交）方法来手动提交offset。</li>
+<li>重复消费根本原因：服务端侧已经消费的数据没有成功提交 offset。</li>
+<li>消费消息服务做幂等校验，比如 Redis 的 set、MySQL 的主键等天然的幂等功能。</li>
+<li>采取拉取到消息即提交的手动提交策略，可能会有消息丢失的风险。通过定时任务在业务不繁忙（比如凌晨）的时候做数据兜底。</li>
+</ul>
+<h3 id="消息积压如何快速定位？如何解决？"><a href="#消息积压如何快速定位？如何解决？" class="headerlink" title="消息积压如何快速定位？如何解决？"></a>消息积压如何快速定位？如何解决？</h3><ul>
+<li>使用Kafka自带的命令行工具或第三方监控工具来监控消费者组的状态。</li>
+<li>检查消费者应用的日志，寻找任何异常或错误提示，这些可能是导致消息处理缓慢的原因。</li>
+<li>增加消费者并发处理能力：增加分区数量和消费者数量。</li>
+<li>提升消费者的消费能力：分析消费者的业务逻辑，优化耗时操作（如数据库操作、IO操作等）。例如，使用批量插入数据库或优化网络通信等。</li>
+<li>提升Kafka集群性能：增加Kafka集群的资源，合理配置消息队列的分区数和分区策略，确保负载均衡。</li>
+</ul>
+<h3 id="如何实现消息重试队列？如何设计死信队列处理永久失败任务？"><a href="#如何实现消息重试队列？如何设计死信队列处理永久失败任务？" class="headerlink" title="如何实现消息重试队列？如何设计死信队列处理永久失败任务？"></a>如何实现消息重试队列？如何设计死信队列处理永久失败任务？</h3><ul>
+<li>创建一个topic作为重试topic，⽤于接收等待重试的消息。普通topic消费者设置待重试消息的下⼀个重试topic。从重试topic获取待重试消息储存到redis的zset中，并以下一次消费时间排序定时任务从redis获取到达消费事件的消息，并把消息发送到对应的topic，同一个消息重试次数过多则不再重试，进入死信队列。</li>
+<li>为永久性失败的消息准备一个单独的主题，即死信队列。当消息达到设定的最大重试次数后，将其发送到此主题。</li>
+</ul>
+<h2 id="功能4"><a href="#功能4" class="headerlink" title="功能4"></a>功能4</h2><h3 id="如何为鸟类学名词设计同义词词典？IK分词器如何扩展热更新词库？"><a href="#如何为鸟类学名词设计同义词词典？IK分词器如何扩展热更新词库？" class="headerlink" title="如何为鸟类学名词设计同义词词典？IK分词器如何扩展热更新词库？"></a>如何为鸟类学名词设计同义词词典？IK分词器如何扩展热更新词库？</h3><ul>
+<li>准备同义词文件，配置Elasticsearch的同义词过滤器。</li>
+<li>通过REST API接口动态加载新的词条到IK分词器中。</li>
+</ul>
+<h3 id="Elasticsearch的索引Mapping设计如何优化模糊查询性能？"><a href="#Elasticsearch的索引Mapping设计如何优化模糊查询性能？" class="headerlink" title="Elasticsearch的索引Mapping设计如何优化模糊查询性能？"></a>Elasticsearch的索引Mapping设计如何优化模糊查询性能？</h3><ul>
+<li>Elasticsearch为所有字段默认构建倒排索引，将词项（Term）映射到包含该词项的文档列表。模糊查询（如 fuzzy、wildcard）会被转换为词项匹配，避免全表扫描。</li>
+<li>倒排索引的词项字典通过数据结构（如 FST，Finite State Transducer）压缩存储，支持高效的模糊匹配（如前缀、编辑距离查询）。</li>
+</ul>
+<h3 id="Canal如何保证MySQL与ES的数据最终一致性？如何处理DDL语句同步？"><a href="#Canal如何保证MySQL与ES的数据最终一致性？如何处理DDL语句同步？" class="headerlink" title="Canal如何保证MySQL与ES的数据最终一致性？如何处理DDL语句同步？"></a>Canal如何保证MySQL与ES的数据最终一致性？如何处理DDL语句同步？</h3><ul>
+<li>Canal 通过监听 MySQL 的 binlog 来获取数据变更信息。Binlog 记录了对 MySQL 数据库的所有更改操作（除了 SELECT），这使得 Canal 可以捕获到每一个数据变更，并将其同步到目标系统（例如 ES）。</li>
+<li>Canal 支持事务模式，即可以将一组相关的变更作为一个事务来处理。这意味着如果在同步过程中出现错误，可以回滚到事务开始前的状态，从而避免部分更新导致的数据不一致问题。</li>
+<li>当同步过程发生故障时（如网络中断或目标系统不可用），Canal 可以配置重试策略。通过设置合理的重试间隔和次数，可以确保在网络恢复后继续未完成的同步任务，进一步保障数据的最终一致性。</li>
+<li>为了防止重复消费的问题，Canal 在设计上考虑了幂等性，确保同一条记录即使被多次消费也不会影响最终的数据一致性。</li>
+<li>Canal 提供了一个名为 Canal Admin 的管理平台，可以帮助用户更方便地管理和监控 Canal 实例，包括对 DDL 事件的处理策略进行配置。</li>
+</ul>
+<h3 id="canal空指针bug"><a href="#canal空指针bug" class="headerlink" title="canal空指针bug"></a>canal空指针bug</h3><ul>
+<li>原因：解析的时候使用了sqlidentifierexpr，导致owners为空</li>
+<li>解决办法：sql语句表设置别名，并在所有字段加上别名，改为使用sqlpropertyexpr</li>
+</ul>
+<h2 id="功能5"><a href="#功能5" class="headerlink" title="功能5"></a>功能5</h2><h3 id="Zset如何实现滑动窗口？Lua脚本如何保证原子性？"><a href="#Zset如何实现滑动窗口？Lua脚本如何保证原子性？" class="headerlink" title="Zset如何实现滑动窗口？Lua脚本如何保证原子性？"></a>Zset如何实现滑动窗口？Lua脚本如何保证原子性？</h3><ul>
+<li>每次执行操作时，将当前时间和一个唯一标识符作为一个成员加入到Zset中。这里的时间作为score（分数），这样就可以按照时间顺序来排序了。</li>
+<li>为了维护滑动窗口的有效性，需要定期移除那些不再属于当前窗口范围内的旧元素。可以通过ZREMRANGEBYSCORE命令来移除那些早于当前时间减去窗口大小的所有元素。</li>
+<li>通过ZCARD命令获取当前Zset中的元素数量，以此判断是否超过了设定的阈值。</li>
+<li>使用Lua脚本执行多个Redis命令时，这些命令会被当作一个整体对待，这意味着整个脚本要么全部执行，要么完全不执行，中间不会被其他命令打断。</li>
+</ul>
+<h3 id="热词统计如何避免冷启动问题？如何设计衰减机制保证时效性？"><a href="#热词统计如何避免冷启动问题？如何设计衰减机制保证时效性？" class="headerlink" title="热词统计如何避免冷启动问题？如何设计衰减机制保证时效性？"></a>热词统计如何避免冷启动问题？如何设计衰减机制保证时效性？</h3><ul>
+<li>预加载数据或使用外部数据源。</li>
+<li>只考虑最近固定时间长度内的数据（例如最近一天或一周的数据）。</li>
+</ul>
+<h3 id="高频写入导致Redis性能下降，如何优化？"><a href="#高频写入导致Redis性能下降，如何优化？" class="headerlink" title="高频写入导致Redis性能下降，如何优化？"></a>高频写入导致Redis性能下降，如何优化？</h3><ul>
+<li>过分片技术将数据均匀分布在多个Redis实例上。</li>
+<li>对于大量的写入操作，可以通过Pipeline将这些命令打包成一个请求发送给Redis。</li>
+</ul>
+<h2 id="功能6"><a href="#功能6" class="headerlink" title="功能6"></a>功能6</h2><h3 id="AOP切面如何动态识别限流注解？如何实现集群限流？"><a href="#AOP切面如何动态识别限流注解？如何实现集群限流？" class="headerlink" title="AOP切面如何动态识别限流注解？如何实现集群限流？"></a>AOP切面如何动态识别限流注解？如何实现集群限流？</h3><ul>
+<li>先定义一个自定义注解用于标识需要限流的方法或类，再创建一个AOP切面，最后在需要限流的方法上添加该注解。</li>
+<li>可以利用Redis作为分布式锁或者计数器的基础。每个请求到达时，都会对特定键的计数器增加。如果计数超过了设定的阈值，则拒绝请求。</li>
+</ul>
+<h3 id="令牌桶与滑动窗口限流算法如何选择？Redisson的RRateLimiter实现原理？"><a href="#令牌桶与滑动窗口限流算法如何选择？Redisson的RRateLimiter实现原理？" class="headerlink" title="令牌桶与滑动窗口限流算法如何选择？Redisson的RRateLimiter实现原理？"></a>令牌桶与滑动窗口限流算法如何选择？Redisson的RRateLimiter实现原理？</h3><ul>
+<li>如果需要平滑的流量控制并能容忍短期的流量爆发，选择令牌桶；如果希望严格限制任何时刻的流量不超过某个阈值，则滑动窗口可能更适合。<br><img src="/BirdFun.assets/RRateLimiter%E9%99%90%E6%B5%81%E5%AE%9E%E7%8E%B0%E6%B5%81%E7%A8%8B%E5%9B%BE.png" alt="RRateLimiter限流实现流程图"></li>
+</ul>
+<h2 id="功能7"><a href="#功能7" class="headerlink" title="功能7"></a>功能7</h2><h3 id="Seata-AT模式全局锁如何避免脏写？回滚日志存储格式是什么？"><a href="#Seata-AT模式全局锁如何避免脏写？回滚日志存储格式是什么？" class="headerlink" title="Seata AT模式全局锁如何避免脏写？回滚日志存储格式是什么？"></a>Seata AT模式全局锁如何避免脏写？回滚日志存储格式是什么？</h3><ul>
+<li>当事务开始对某个数据库表进行更新操作时，Seata客户端会向TC（Transaction Coordinator，事务协调器）申请对应的全局锁。</li>
+<li>如果申请成功，表明当前事务获得了对该数据的独占访问权，可以继续执行更新操作；如果申请失败，则需要等待直至获得锁。</li>
+<li>一旦事务完成（提交或回滚），TC会释放相应的全局锁，允许其他等待的事务继续执行。</li>
+<li>xid：全局事务ID，用于唯一标识一个分布式事务。<br>branchId：分支事务ID，表示一个全局事务内的不同子事务。<br>context：上下文信息，包括事务模式等元数据。<br>tableName：受影响的表名。<br>pk：主键值，指示哪条记录被影响。<br>rollback_info：回滚所需的信息，包含更新前的旧值以及更新语句等，以便在发生错误时能够恢复到之前的状态。<br>status：状态标记，指示该条回滚日志的状态（例如是否已应用）。<br>gmt_create 和 gmt_modified：创建时间和最后修改时间。</li>
+</ul>
+<h3 id="如何解决事务悬挂和空回滚？AT模式对数据库类型是否有要求？"><a href="#如何解决事务悬挂和空回滚？AT模式对数据库类型是否有要求？" class="headerlink" title="如何解决事务悬挂和空回滚？AT模式对数据库类型是否有要求？"></a>如何解决事务悬挂和空回滚？AT模式对数据库类型是否有要求？</h3><ul>
+<li>事务悬挂：Seata AT模式引入了全局锁机制，并通过TC（Transaction Coordinator）来协调各个分支事务的状态。确保所有分支事务都成功提交后才最终提交全局事务，否则进行回滚操作。</li>
+<li>空回滚：在执行分支事务之前，首先向TC注册该分支事务，记录其状态为“初始化”。当收到回滚请求时，先检查分支事务的状态。如果状态为“初始化”，则说明分支事务实际上没有被执行，此时可以安全地进行空回滚。如果分支事务已经开始执行，则需要根据实际执行情况来进行补偿操作。</li>
+<li>Seata AT模式的设计目的是为了提供一种通用的解决方案，以支持多种数据库类型的分布式事务管理。理论上，AT模式适用于任何支持JDBC规范的关系型数据库，包括但不限于MySQL、Oracle、PostgreSQL等。这是因为Seata通过解析SQL语句来自动识别和处理事务中的读写操作，并生成相应的回滚日志。</li>
+</ul>
+<h3 id="高并发下大量全局锁导致性能下降，如何优化？能否改用最终一致性方案？"><a href="#高并发下大量全局锁导致性能下降，如何优化？能否改用最终一致性方案？" class="headerlink" title="高并发下大量全局锁导致性能下降，如何优化？能否改用最终一致性方案？"></a>高并发下大量全局锁导致性能下降，如何优化？能否改用最终一致性方案？</h3><ul>
+<li>减少锁的粒度：尽可能缩小需要加锁的数据范围，比如从锁定整个表改为锁定特定行，从而降低锁冲突的概率。</li>
+<li>异步提交：对于某些不影响事务最终结果的操作，可以采用异步方式执行，以减少对全局锁的竞争。</li>
+<li>批量处理：将多个操作合并成一个批次进行处理，这样可以减少获取和释放锁的次数。</li>
+<li>读写分离：通过主从复制的方式实现数据库的读写分离，使得读操作不会受到写锁的影响。</li>
+<li>使用乐观锁机制：在一些情况下，可以使用版本号或时间戳来代替悲观锁，只有在数据更新时才检查是否有冲突发生。</li>
+<li>可以通过消息队列等实现改用最终一致性方案，但需要实施有效的监控和补偿机制来处理潜在的不一致情况。</li>
+</ul>
+
       
 
       
@@ -320,8 +450,8 @@
     </a>
   
   
-    <a href="/2025/01/24/FishRPC/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">FishRPC</div>
+    <a href="/2025/01/24/RPC%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">RPC相关知识</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -348,7 +478,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#BirdFun"><span class="toc-number">1.</span> <span class="toc-text">BirdFun</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="toc-number">1.1.</span> <span class="toc-text">总体架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD1"><span class="toc-number">1.2.</span> <span class="toc-text">功能1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD2"><span class="toc-number">1.3.</span> <span class="toc-text">功能2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD3"><span class="toc-number">1.4.</span> <span class="toc-text">功能3</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD4"><span class="toc-number">1.5.</span> <span class="toc-text">功能4</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD5"><span class="toc-number">1.6.</span> <span class="toc-text">功能5</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD6"><span class="toc-number">1.7.</span> <span class="toc-text">功能6</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD7"><span class="toc-number">1.8.</span> <span class="toc-text">功能7</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#BirdFun"><span class="toc-number">1.</span> <span class="toc-text">BirdFun</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="toc-number">1.1.</span> <span class="toc-text">总体架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD1"><span class="toc-number">1.2.</span> <span class="toc-text">功能1</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%8B%86%E5%88%86%E6%97%B6%EF%BC%8C%E4%BD%A0%E6%98%AF%E5%A6%82%E4%BD%95%E5%88%92%E5%88%86%E6%9C%8D%E5%8A%A1%E8%BE%B9%E7%95%8C%E5%92%8C%E5%AE%9A%E4%B9%89%E6%8E%A5%E5%8F%A3%E8%A7%84%E8%8C%83%E7%9A%84%EF%BC%9F%E5%A6%82%E4%BD%95%E9%81%BF%E5%85%8D%E5%BE%AA%E7%8E%AF%E4%BE%9D%E8%B5%96%EF%BC%9F"><span class="toc-number">1.2.1.</span> <span class="toc-text">微服务拆分时，你是如何划分服务边界和定义接口规范的？如何避免循环依赖？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Nacos%E4%B8%8EEureka%E5%9C%A8CAP%E7%90%86%E8%AE%BA%E4%B8%8A%E7%9A%84%E5%8C%BA%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9FNacos%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E5%8A%A8%E6%80%81%E5%88%B7%E6%96%B0%EF%BC%9F"><span class="toc-number">1.2.2.</span> <span class="toc-text">Nacos与Eureka在CAP理论上的区别是什么？Nacos如何实现配置中心动态刷新？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E5%BB%B6%E8%BF%9F%E5%AF%BC%E8%87%B4%E8%B0%83%E7%94%A8%E5%A4%B1%E8%B4%A5%EF%BC%8C%E5%A6%82%E4%BD%95%E6%8E%92%E6%9F%A5%EF%BC%9F%E5%A6%82%E4%BD%95%E8%AE%BE%E8%AE%A1%E6%9C%8D%E5%8A%A1%E7%86%94%E6%96%AD%E7%AD%96%E7%95%A5%EF%BC%9F"><span class="toc-number">1.2.3.</span> <span class="toc-text">服务注册延迟导致调用失败，如何排查？如何设计服务熔断策略？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BD%91%E5%85%B3%E5%B1%82%E5%A6%82%E4%BD%95%E9%98%B2%E6%AD%A2%E9%87%8D%E6%94%BE%E6%94%BB%E5%87%BB%EF%BC%9F%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%8E%A5%E5%8F%A3%E8%AE%BF%E9%97%AE%E9%A2%91%E6%AC%A1%E6%8E%A7%E5%88%B6%EF%BC%9F"><span class="toc-number">1.2.4.</span> <span class="toc-text">网关层如何防止重放攻击？如何实现接口访问频次控制？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD2"><span class="toc-number">1.3.</span> <span class="toc-text">功能2</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#FFmpeg%E8%BD%ACHLS%E6%97%B6%E5%A6%82%E4%BD%95%E6%8E%A7%E5%88%B6%E5%88%86%E7%89%87%E6%97%B6%E9%95%BF%EF%BC%9F%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E9%9F%B3%E7%94%BB%E5%90%8C%E6%AD%A5%EF%BC%9F"><span class="toc-number">1.3.1.</span> <span class="toc-text">FFmpeg转HLS时如何控制分片时长？如何保证音画同步？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E6%A0%B8%E5%BF%83%E5%8F%82%E6%95%B0%E5%A6%82%E4%BD%95%E8%AE%BE%E7%BD%AE%EF%BC%9F%E5%A6%82%E4%BD%95%E9%81%BF%E5%85%8DOOM%EF%BC%9FCompletableFuture%E5%BC%82%E5%B8%B8%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86%EF%BC%9F"><span class="toc-number">1.3.2.</span> <span class="toc-text">自定义线程池的核心参数如何设置？如何避免OOM？CompletableFuture异常如何处理？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%AD%E7%82%B9%E7%BB%AD%E4%BC%A0%E5%8A%9F%E8%83%BD%E5%9C%A8OSS%E4%B8%8A%E4%BC%A0%E4%B8%AD%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%EF%BC%9F%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E5%88%86%E7%89%87%E4%B8%8A%E4%BC%A0%E7%9A%84%E5%8E%9F%E5%AD%90%E6%80%A7%EF%BC%9F"><span class="toc-number">1.3.3.</span> <span class="toc-text">断点续传功能在OSS上传中如何实现？如何保证分片上传的原子性？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%86%E9%A2%91%E8%BD%AC%E7%A0%81%E8%80%97%E6%97%B6%E8%BF%87%E9%95%BF%EF%BC%8C%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87%E7%A1%AC%E4%BB%B6%E5%8A%A0%E9%80%9F%EF%BC%88%E5%A6%82GPU%EF%BC%89%E4%BC%98%E5%8C%96%EF%BC%9F%E5%A6%82%E4%BD%95%E8%AE%BE%E8%AE%A1%E8%BF%9B%E5%BA%A6%E7%9B%91%E6%8E%A7%EF%BC%9F"><span class="toc-number">1.3.4.</span> <span class="toc-text">视频转码耗时过长，如何通过硬件加速（如GPU）优化？如何设计进度监控？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD3"><span class="toc-number">1.4.</span> <span class="toc-text">功能3</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Kafka%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E8%A7%86%E9%A2%91%E5%A4%84%E7%90%86%E4%BB%BB%E5%8A%A1%E7%9A%84%E9%A1%BA%E5%BA%8F%E6%80%A7%EF%BC%9F%E5%88%86%E5%8C%BA%E7%AD%96%E7%95%A5%E5%A6%82%E4%BD%95%E8%AE%BE%E8%AE%A1%EF%BC%9F"><span class="toc-number">1.4.1.</span> <span class="toc-text">Kafka如何保证视频处理任务的顺序性？分区策略如何设计？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Kafka-%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%B6%88%E6%81%AF%E4%B8%8D%E4%B8%A2%E5%A4%B1%EF%BC%9F"><span class="toc-number">1.4.2.</span> <span class="toc-text">Kafka 如何保证消息不丢失？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E8%B4%B9%E8%80%85%E6%8F%90%E4%BA%A4offset%E7%9A%84%E6%9C%BA%E5%88%B6%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F%E5%A6%82%E4%BD%95%E9%81%BF%E5%85%8D%E9%87%8D%E5%A4%8D%E6%B6%88%E8%B4%B9%EF%BC%9F"><span class="toc-number">1.4.3.</span> <span class="toc-text">消费者提交offset的机制是什么？如何避免重复消费？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E6%81%AF%E7%A7%AF%E5%8E%8B%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%EF%BC%9F%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%EF%BC%9F"><span class="toc-number">1.4.4.</span> <span class="toc-text">消息积压如何快速定位？如何解决？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%B6%88%E6%81%AF%E9%87%8D%E8%AF%95%E9%98%9F%E5%88%97%EF%BC%9F%E5%A6%82%E4%BD%95%E8%AE%BE%E8%AE%A1%E6%AD%BB%E4%BF%A1%E9%98%9F%E5%88%97%E5%A4%84%E7%90%86%E6%B0%B8%E4%B9%85%E5%A4%B1%E8%B4%A5%E4%BB%BB%E5%8A%A1%EF%BC%9F"><span class="toc-number">1.4.5.</span> <span class="toc-text">如何实现消息重试队列？如何设计死信队列处理永久失败任务？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD4"><span class="toc-number">1.5.</span> <span class="toc-text">功能4</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E4%B8%BA%E9%B8%9F%E7%B1%BB%E5%AD%A6%E5%90%8D%E8%AF%8D%E8%AE%BE%E8%AE%A1%E5%90%8C%E4%B9%89%E8%AF%8D%E8%AF%8D%E5%85%B8%EF%BC%9FIK%E5%88%86%E8%AF%8D%E5%99%A8%E5%A6%82%E4%BD%95%E6%89%A9%E5%B1%95%E7%83%AD%E6%9B%B4%E6%96%B0%E8%AF%8D%E5%BA%93%EF%BC%9F"><span class="toc-number">1.5.1.</span> <span class="toc-text">如何为鸟类学名词设计同义词词典？IK分词器如何扩展热更新词库？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Elasticsearch%E7%9A%84%E7%B4%A2%E5%BC%95Mapping%E8%AE%BE%E8%AE%A1%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96%E6%A8%A1%E7%B3%8A%E6%9F%A5%E8%AF%A2%E6%80%A7%E8%83%BD%EF%BC%9F"><span class="toc-number">1.5.2.</span> <span class="toc-text">Elasticsearch的索引Mapping设计如何优化模糊查询性能？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Canal%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81MySQL%E4%B8%8EES%E7%9A%84%E6%95%B0%E6%8D%AE%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7%EF%BC%9F%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86DDL%E8%AF%AD%E5%8F%A5%E5%90%8C%E6%AD%A5%EF%BC%9F"><span class="toc-number">1.5.3.</span> <span class="toc-text">Canal如何保证MySQL与ES的数据最终一致性？如何处理DDL语句同步？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#canal%E7%A9%BA%E6%8C%87%E9%92%88bug"><span class="toc-number">1.5.4.</span> <span class="toc-text">canal空指针bug</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD5"><span class="toc-number">1.6.</span> <span class="toc-text">功能5</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Zset%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%EF%BC%9FLua%E8%84%9A%E6%9C%AC%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E5%8E%9F%E5%AD%90%E6%80%A7%EF%BC%9F"><span class="toc-number">1.6.1.</span> <span class="toc-text">Zset如何实现滑动窗口？Lua脚本如何保证原子性？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%83%AD%E8%AF%8D%E7%BB%9F%E8%AE%A1%E5%A6%82%E4%BD%95%E9%81%BF%E5%85%8D%E5%86%B7%E5%90%AF%E5%8A%A8%E9%97%AE%E9%A2%98%EF%BC%9F%E5%A6%82%E4%BD%95%E8%AE%BE%E8%AE%A1%E8%A1%B0%E5%87%8F%E6%9C%BA%E5%88%B6%E4%BF%9D%E8%AF%81%E6%97%B6%E6%95%88%E6%80%A7%EF%BC%9F"><span class="toc-number">1.6.2.</span> <span class="toc-text">热词统计如何避免冷启动问题？如何设计衰减机制保证时效性？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%AB%98%E9%A2%91%E5%86%99%E5%85%A5%E5%AF%BC%E8%87%B4Redis%E6%80%A7%E8%83%BD%E4%B8%8B%E9%99%8D%EF%BC%8C%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96%EF%BC%9F"><span class="toc-number">1.6.3.</span> <span class="toc-text">高频写入导致Redis性能下降，如何优化？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD6"><span class="toc-number">1.7.</span> <span class="toc-text">功能6</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#AOP%E5%88%87%E9%9D%A2%E5%A6%82%E4%BD%95%E5%8A%A8%E6%80%81%E8%AF%86%E5%88%AB%E9%99%90%E6%B5%81%E6%B3%A8%E8%A7%A3%EF%BC%9F%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%9B%86%E7%BE%A4%E9%99%90%E6%B5%81%EF%BC%9F"><span class="toc-number">1.7.1.</span> <span class="toc-text">AOP切面如何动态识别限流注解？如何实现集群限流？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A4%E7%89%8C%E6%A1%B6%E4%B8%8E%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%E9%99%90%E6%B5%81%E7%AE%97%E6%B3%95%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%EF%BC%9FRedisson%E7%9A%84RRateLimiter%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%EF%BC%9F"><span class="toc-number">1.7.2.</span> <span class="toc-text">令牌桶与滑动窗口限流算法如何选择？Redisson的RRateLimiter实现原理？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD7"><span class="toc-number">1.8.</span> <span class="toc-text">功能7</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Seata-AT%E6%A8%A1%E5%BC%8F%E5%85%A8%E5%B1%80%E9%94%81%E5%A6%82%E4%BD%95%E9%81%BF%E5%85%8D%E8%84%8F%E5%86%99%EF%BC%9F%E5%9B%9E%E6%BB%9A%E6%97%A5%E5%BF%97%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">1.8.1.</span> <span class="toc-text">Seata AT模式全局锁如何避免脏写？回滚日志存储格式是什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E4%BA%8B%E5%8A%A1%E6%82%AC%E6%8C%82%E5%92%8C%E7%A9%BA%E5%9B%9E%E6%BB%9A%EF%BC%9FAT%E6%A8%A1%E5%BC%8F%E5%AF%B9%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B1%BB%E5%9E%8B%E6%98%AF%E5%90%A6%E6%9C%89%E8%A6%81%E6%B1%82%EF%BC%9F"><span class="toc-number">1.8.2.</span> <span class="toc-text">如何解决事务悬挂和空回滚？AT模式对数据库类型是否有要求？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%AB%98%E5%B9%B6%E5%8F%91%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%85%A8%E5%B1%80%E9%94%81%E5%AF%BC%E8%87%B4%E6%80%A7%E8%83%BD%E4%B8%8B%E9%99%8D%EF%BC%8C%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96%EF%BC%9F%E8%83%BD%E5%90%A6%E6%94%B9%E7%94%A8%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7%E6%96%B9%E6%A1%88%EF%BC%9F"><span class="toc-number">1.8.3.</span> <span class="toc-text">高并发下大量全局锁导致性能下降，如何优化？能否改用最终一致性方案？</span></a></li></ol></li></ol></li></ol>
                     </div>
                 </span>
             </div>
