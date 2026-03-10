@@ -17,7 +17,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://example.com/assets/%E5%89%8D%E7%AB%AF%E5%92%8C%E5%90%8E%E7%AB%AF%E5%AF%B9%E5%BA%94%E5%9B%BE.png">
 <meta property="article:published_time" content="2025-06-13T16:00:00.000Z">
-<meta property="article:modified_time" content="2025-06-14T12:46:05.509Z">
+<meta property="article:modified_time" content="2026-03-10T10:42:01.782Z">
 <meta property="article:author" content="Afish">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/assets/%E5%89%8D%E7%AB%AF%E5%92%8C%E5%90%8E%E7%AB%AF%E5%AF%B9%E5%BA%94%E5%9B%BE.png">
@@ -206,6 +206,86 @@
 <li>我是一个做事很专注投入的人，也很有上进心，能保质保效完成任务。</li>
 <li>我深知软件开发是一个团队协作的过程。因此，我注重与团队成员的有效沟通，包括前端开发、测试开发等，以确保信息流畅，减少误解，提高工作效率。</li>
 </ul>
+<h1 id="腾讯qq"><a href="#腾讯qq" class="headerlink" title="腾讯qq"></a>腾讯qq</h1><ol>
+<li>弹幕功能怎么做的？实时同步？</li>
+</ol>
+<ul>
+<li>基于 HTTP 短连接的“伪实时”弹幕系统，或者更准确地说是弹幕的持久化存储与历史加载系统。</li>
+<li>通信层：用 WebSocket 替代单纯的 HTTP 轮询，建立服务端到客户端的主动通道。</li>
+<li>消息层：利用 Redis Pub&#x2F;Sub 将 saveVideoDanmu 产生的数据变更广播给所有网关节点。</li>
+<li>缓冲层：在客户端引入时间戳缓冲队列，确保弹幕按照视频播放时间精准渲染，而不是按照网络到达时间渲染。</li>
+</ul>
+<ol start="2">
+<li>openclaw相对于claude code的优化，为什么这么火？</li>
+</ol>
+<ul>
+<li>Claude Code：是 Anthropic 官方推出的专业编程 Agent。它的核心优势是深度集成在开发工作流中，擅长代码生成、调试、重构，是一个高效的“副驾驶（Co-pilot）”。它的边界主要在 IDE 和代码库内。</li>
+<li>OpenClaw：定位为个人通用 AI 代理（Personal General Agent），Slogan 是 “The AI that actually does things”。它不仅仅写代码，更是一个拥有系统权限、能长期运行、具备“性格”和“持久记忆”的数字员工。它突破了 IDE，直接操作操作系统、文件系统和外部应用。</li>
+<li>A. 持久化记忆系统（Persistent Memory）—— 解决“断片”难题<br>痛点：Claude Code 的记忆主要依赖上下文窗口（Context Window），会话结束或窗口溢出后，之前的任务状态、用户偏好容易丢失。<br>OpenClaw 优化：引入了基于本地文件系统（Markdown&#x2F;JSON）的长期记忆机制。<br>它会自动将任务进度、用户习惯、环境配置写入本地文件。<br>即使重启或隔天继续，它能“记得”昨天的待办事项、代码风格偏好甚至用户的个人琐事（如“提醒我吃冰箱里的牛肉”）。<br>效果：从“一次性工具”进化为“长期伙伴”，大幅降低了重复指令的成本。</li>
+<li>B. 主动性与自主规划（Autonomy &amp; Proactivity）<br>痛点：Claude Code 主要是“响应式”的，用户给指令，它执行。<br>OpenClaw 优化：增强了自主循环（Agent Loop）。<br>它不仅执行命令，还能自我拆解目标、主动检查环境状态、甚至在发现错误时自动尝试修复而无需用户干预。<br>它具备“技能自激活”能力，能根据任务动态加载需要的工具模块。<br>效果：用户只需给出一个模糊的高层目标（如“帮我把这个博客搭好并部署”），OpenClaw 能独立完成从环境配置、代码编写到部署的全流程。</li>
+<li>C. 模型无关性与生态开放（Model Agnostic）<br>痛点：Claude Code 强绑定 Anthropic 模型，成本高且无法利用其他模型的优势。<br>OpenClaw 优化：作为开源框架，它原生支持多模型路由。<br>2026 年的版本（如 v2026.3.7）已原生支持 GPT-5.4、Claude 3.7&#x2F;4.0 以及国产高性价比模型（如 MiniMax、DeepSeek 等）。<br>用户可以根据任务难度动态切换模型：简单任务用便宜模型，复杂推理用高端模型。<br>数据佐证：在 OOLONG 基准测试中，OpenClaw 配合特定插件（lossless-claw）和多模型策略，得分（74.8）超越了单一 Claude Code 实例（70.3），证明了其架构的优越性。</li>
+<li>D. 极致的交互体验（UX &amp; Distribution）<br>痛点：专业工具学习成本高，需要配置复杂的 IDE 插件。<br>OpenClaw 优化：“聊天即操作”。<br>它将入口嵌入到用户最熟悉的即时通讯软件（Slack, Discord, 微信）或直接通过终端运行，无需切换界面。<br>赋予了 Agent“人格化”特征（如改名时的反应、幽默的回复），增加了用户的情感粘性（“活人感”）。</li>
+</ul>
+<ol start="3">
+<li>Skill和prompt的区别？</li>
+</ol>
+<ul>
+<li>Prompt是‘思维与指令’，而Skill是‘手脚与能力’</li>
+<li>Prompt（提示词）：是人与模型交互的接口，本质是自然语言编程。它负责定义任务目标、设定角色、提供上下文（Context）、约束输出格式以及引导推理逻辑（CoT）。它的边界在于模型的参数知识和上下文窗口。</li>
+<li>Skill（技能&#x2F;工具&#x2F;Function）：是模型能力的确定性扩展。它通常指代具体的函数调用（Function Calling）、API接口、代码执行环境或外部数据库查询。它负责执行模型‘想’做但‘做’不了的事情（如实时联网、复杂计算、私有数据检索、执行事务操作）。”</li>
+</ul>
+<ol start="4">
+<li>从浏览器地址栏输入 url 到显示网页的过程了解吗？</li>
+</ol>
+<ul>
+<li>DNS 解析：浏览器会发起一个 DNS 请求到 DNS 服务器，将域名解析为服务器的 IP 地址。</li>
+<li>TCP 连接：浏览器通过解析得到的 IP 地址与服务器建立 TCP 连接。这一步涉及到 TCP 的三次握手，用于确保双方都已经准备好进行数据传输了。</li>
+<li>发送 HTTP 请求：浏览器构建 HTTP 请求，包括请求行、请求头和请求体；然后将请求发送到服务器。</li>
+<li>服务器处理请求：服务器接收到 HTTP 请求后，根据请求的资源路径，经过后端处理，生成 HTTP 响应消息；响应消息包括状态行、响应头和响应体。</li>
+<li>浏览器接收 HTTP 响应：浏览器接收到服务器返回的 HTTP 响应数据后，开始解析响应体中的 HTML 内容；然后构建 DOM 树、解析 CSS 和 JavaScript 文件等，最终渲染页面。</li>
+<li>断开连接：TCP 四次挥手，连接结束。</li>
+</ul>
+<ol start="5">
+<li>详细说一下 TCP 的三次握手机制，如果连接完成网线断了会发生什么？</li>
+</ol>
+<ul>
+<li>一次握手:客户端发送带有 SYN（SEQ&#x3D;x） 标志的数据包 -&gt; 服务端，然后客户端进入 SYN_SEND 状态，等待服务端的确认；</li>
+<li>二次握手:服务端发送带有 SYN+ACK(SEQ&#x3D;y,ACK&#x3D;x+1) 标志的数据包 –&gt; 客户端,然后服务端进入 SYN_RECV 状态；</li>
+<li>三次握手:客户端发送带有 ACK(ACK&#x3D;y+1) 标志的数据包 –&gt; 服务端，然后客户端和服务端都进入ESTABLISHED 状态，完成 TCP 三次握手。<br>(<a target="_blank" rel="noopener" href="https://www.xiaolincoding.com/network/3_tcp/tcp_unplug_the_network_cable.html">https://www.xiaolincoding.com/network/3_tcp/tcp_unplug_the_network_cable.html</a>)</li>
+</ul>
+<ol start="6">
+<li>说说 HTTP 与 HTTPS 有哪些区别？</li>
+</ol>
+<ul>
+<li>HTTPS 是 HTTP 的增强版，在 HTTP 的基础上加入了 SSL&#x2F;TLS 协议，确保数据在传输过程中是加密的。</li>
+<li>HTTP 的默认端⼝号是 80，URL 以http:&#x2F;&#x2F;开头；HTTPS 的默认端⼝号是 443，URL 以https:&#x2F;&#x2F;开头。</li>
+</ul>
+<ol start="7">
+<li>说说进程和线程的区别？</li>
+</ol>
+<ul>
+<li>进程说简单点就是我们在电脑上启动的一个个应用。它是操作系统分配资源的最小单位。</li>
+<li>线程是进程中的独立执行单元。多个线程可以共享同一个进程的资源，如内存；每个线程都有自己独立的栈和寄存器。</li>
+</ul>
+<ol start="8">
+<li>什么是锁？</li>
+</ol>
+<ul>
+<li>锁（Lock） 是一种用于控制多个线程对共享资源访问的机制。它的核心目的是保证线程安全，防止在多线程环境下出现数据竞争（Race Condition）、数据不一致或脏读等问题。</li>
+<li>简单来说，锁就像是一把“钥匙”，同一时间只有一个线程能拿到这把钥匙进入临界区（操作共享资源的代码块），其他线程必须等待。</li>
+</ul>
+<ol start="9">
+<li>线程死锁了解吗？该如何避免死锁呢？</li>
+</ol>
+<ul>
+<li>死锁发生在多个线程相互等待对方释放锁时。比如说线程 1 持有锁 R1，等待锁 R2；线程 2 持有锁 R2，等待锁 R1。</li>
+<li>第一，所有线程都按照固定的顺序来申请资源。例如，先申请 R1 再申请 R2。</li>
+<li>第二，如果线程发现无法获取某个资源，可以先释放已经持有的资源，重新尝试申请。</li>
+</ul>
+<ol start="10">
+<li>CDN<br>(<a target="_blank" rel="noopener" href="https://javaguide.cn/high-performance/cdn.html">https://javaguide.cn/high-performance/cdn.html</a>)</li>
+<li>手撕：平方数组</li>
+</ol>
 
       
 
@@ -347,7 +427,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%81%E5%B1%B9%E4%BF%A1%E6%81%AF"><span class="toc-number">1.</span> <span class="toc-text">允屹信息</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%81%E5%B1%B9%E4%BF%A1%E6%81%AF"><span class="toc-number">1.</span> <span class="toc-text">允屹信息</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%85%BE%E8%AE%AFqq"><span class="toc-number">2.</span> <span class="toc-text">腾讯qq</span></a></li></ol>
                     </div>
                 </span>
             </div>
