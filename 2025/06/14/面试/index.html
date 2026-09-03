@@ -17,7 +17,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://example.com/assets/%E5%89%8D%E7%AB%AF%E5%92%8C%E5%90%8E%E7%AB%AF%E5%AF%B9%E5%BA%94%E5%9B%BE.png">
 <meta property="article:published_time" content="2025-06-13T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-03-10T10:42:01.782Z">
+<meta property="article:modified_time" content="2026-09-03T13:14:18.496Z">
 <meta property="article:author" content="Afish">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/assets/%E5%89%8D%E7%AB%AF%E5%92%8C%E5%90%8E%E7%AB%AF%E5%AF%B9%E5%BA%94%E5%9B%BE.png">
@@ -286,6 +286,197 @@
 <li>CDN<br>(<a target="_blank" rel="noopener" href="https://javaguide.cn/high-performance/cdn.html">https://javaguide.cn/high-performance/cdn.html</a>)</li>
 <li>手撕：平方数组</li>
 </ol>
+<h1 id="滴滴"><a href="#滴滴" class="headerlink" title="滴滴"></a>滴滴</h1><ol>
+<li>JVM堆，栈，方法区分别存放什么？</li>
+</ol>
+<ul>
+<li>这三个区域是JVM内存模型的核心，它们的分工非常明确：</li>
+<li>堆（Heap）： 这是JVM内存中最大的一块，也是垃圾回收（GC）的主战场。它被所有线程共享，主要存放对象实例和数组。只要是我们new出来的东西，几乎都在这里。为了优化GC，堆通常还被细分为新生代（Eden,Survivor）和老年代。</li>
+<li>虚拟机栈（Stack）： 这是线程私有的，生命周期和线程一样。它描述的是Java方法执行的内存模型。每个方法在执行时都会创建一个栈帧，用来存储局部变量表（基本数据类型、对象引用）、操作数栈、动态链接和方法返回地址等。简单说，方法的调用和返回就是栈的压栈和出栈。</li>
+<li>元空间（Metaspace，JDK 8前叫方法区&#x2F;永久代）： 这也是线程共享的。它主要存放被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码缓存等。JDK 8之后，元空间不再占用JVM堆内存，而是直接使用本地内存，这大大减少了内存溢出的风险</li>
+</ul>
+<ol start="2">
+<li>双亲委派机制的最高父类加载的是什么类？</li>
+</ol>
+<ul>
+<li>双亲委派机制的最高层级是启动类加载器（Bootstrap ClassLoader）。</li>
+<li>特殊性： 它是由C++实现的（在HotSpot虚拟机中），在Java代码中表现为null，因为它不属于java.lang.ClassLoader的子类。</li>
+<li>职责： 它负责加载最核心的Java类库，比如rt.jar中的类，包括java.lang.Object、java.lang.String等。</li>
+<li>机制： 当一个类加载器收到请求时，它首先不会自己去加载，而是委派给父类加载器，一直委派到Bootstrap ClassLoader。只有当父加载器无法加载时，子类才会尝试自己加载。这种机制保证了Java核心类库的安全，防止被篡改。</li>
+</ul>
+<ol start="3">
+<li>对象创建的过程？</li>
+</ol>
+<ul>
+<li>类加载检查： 虚拟机遇到new指令时，首先检查这个指令的参数是否能在常量池中定位到一个类的符号引用，并检查该类是否已被加载。如果没有，先执行类加载。</li>
+<li>分配内存： 类加载完成后，JVM会在堆上为对象分配内存。如果内存规整（使用指针碰撞），就移动指针；如果不规整（使用空闲列表），就查找可用空间。这里还涉及到TLAB（线程本地分配缓存）来保证并发分配的安全性。</li>
+<li>零值初始化： 内存分配完成后，将内存空间初始化（如int为0，boolean为false），保证对象实例字段不赋值也能直接使用默认值。</li>
+<li>设置对象头： 设置对象的元数据信息，比如HashCode、GC分代年龄、锁标志位、类型指针（指向方法区的类元数据）等。</li>
+<li>执行构造方法： 最后，JVM按照程序的设定，执行类的构造方法<init>，对对象进行初始化（如给属性赋值），此时一个真正的对象才算创建完成。</li>
+</ul>
+<ol start="4">
+<li>介绍java21虚拟线程？</li>
+</ol>
+<ul>
+<li>Java 21的虚拟线程（Virtual Threads）是Java并发编程的一次重大变革，它的核心目标是用同步的代码风格，实现异步的高吞吐量。</li>
+<li>传统痛点： 传统的平台线程（Platform Thread）是1:1映射到操作系统内核线程的，创建成本高（占用约1MB栈内存），且阻塞时会浪费昂贵的内核线程资源。</li>
+<li>虚拟线程原理： 虚拟线程是JDK层面的“轻量级线程”，采用M:N调度模型。它将大量的虚拟线程（M）映射到少量的载体线程（Carrier Thread，即平台线程，N）上。</li>
+<li>核心优势：</li>
+<li>极低的成本： 虚拟线程的栈存储在堆内存中，初始仅几百字节，可以创建百万级。</li>
+<li>挂载与卸载： 当虚拟线程执行阻塞I&#x2F;O操作（如Thread.sleep、网络读取）时，JVM会自动将其从载体线程上卸载（Unmount），保存其栈帧到堆中，并让载体线程去执行其他虚拟线程。当I&#x2F;O完成，再挂载（Mount）回去。</li>
+<li>适用场景： 非常适合高并发的I&#x2F;O密集型应用（如Web服务、微服务网关），可以彻底告别复杂的异步回调（Reactive）编程，同时获得极高的吞吐量。</li>
+</ul>
+<ol start="5">
+<li>agent短期记忆和长期记忆？</li>
+</ol>
+<ul>
+<li>短期记忆（Short-term Memory）：</li>
+<li>本质： 通常指LLM的上下文窗口（Context Window）。</li>
+<li>特点： 容量有限（Token限制），访问速度极快（直接在Prompt中），生命周期仅限于当前会话或任务。</li>
+<li>作用： 记住用户刚才说的话、当前的任务状态、上一步的工具调用结果。就像人脑的“工作记忆”，处理当下的逻辑。</li>
+<li>长期记忆（Long-term Memory）：</li>
+<li>本质： 通常外挂向量数据库（如Milvus, Pinecone）或键值存储。</li>
+<li>特点： 容量巨大，持久化存储，通过语义检索（RAG技术）来访问。</li>
+<li>作用： 存储用户的历史偏好、跨会话的知识、庞大的业务文档。当需要时，Agent会从长期记忆中检索相关信息，加载到短期记忆中供模型使用。</li>
+</ul>
+<ol start="6">
+<li>Elasticsearch要查的几个词在多个文档中出现，查询过程？</li>
+</ol>
+<ul>
+<li>这是一个典型的全文检索场景，Elasticsearch主要依赖倒排索引和相关性评分来完成。</li>
+<li>分词（Analysis）： 首先，查询语句会被分析器（Analyzer）分词，比如“Java并发”被拆分为“Java”和“并发”。</li>
+<li>倒排索引查找： ES拿着这些词去倒排索引中查找。倒排索引记录了“词 -&gt; 文档ID列表”的映射。</li>
+<li>多字段处理（Multi-match）： 如果你在多个字段（如标题、内容）查询，ES会使用multi_match查询。</li>
+<li>如果是best_fields策略，它会取所有字段中得分最高的那个作为最终得分。</li>
+<li>如果是most_fields策略，它会将各个字段的得分合并。</li>
+<li>评分（Scoring）： ES使用BM25算法（或早期的TF-IDF）计算相关性得分。</li>
+<li>词频（TF）： 词在文档中出现的频率越高，相关性越高。</li>
+<li>逆文档频率（IDF）： 词在整个索引库中越稀有，权重越高（比如“Java”比“的”权重高）。</li>
+<li>字段长度归一化： 字段越短，命中词的概率越低，因此短字段命中通常得分更高。</li>
+<li>结果： 最终，ES根据计算出的_score对文档进行排序，返回得分最高的文档列表。</li>
+</ul>
+<ol start="7">
+<li>rag问答准确率的评判标准？</li>
+</ol>
+<ul>
+<li>上下文精准度（Context Precision）： 衡量检索到的文档中，有多少是真正相关的。这决定了“找得准不准”。</li>
+<li>上下文召回率（Context Recall）： 衡量所有相关的文档中，有多少被检索到了。这决定了“有没有漏掉关键信息”。</li>
+<li>忠实度（Faithfulness）： 衡量生成的答案是否完全基于检索到的上下文，有没有产生幻觉（瞎编）。这是RAG系统的生命线。</li>
+<li>答案相关性（Answer Relevance）： 衡量生成的答案是否直接回答了用户的问题，有没有答非所问。</li>
+</ul>
+<ol start="8">
+<li>线程的几个状态？</li>
+</ol>
+<ul>
+<li>NEW（新建）： 线程对象被创建，但还没调用start()。</li>
+<li>RUNNABLE（可运行）： 调用了start()，线程正在Java虚拟机中执行，但可能在等待操作系统分配CPU时间片。</li>
+<li>BLOCKED（阻塞）： 线程等待进入synchronized方法或代码块，但没抢到锁（在锁池中等待）。</li>
+<li>WAITING（无限等待）： 调用了Object.wait()、Thread.join()或LockSupport.park()，需要被其他线程显式唤醒。</li>
+<li>TIMED_WAITING（限时等待）： 调用了带超时参数的方法，如Thread.sleep(long)、Object.wait(long)，时间到了会自动苏醒。</li>
+<li>TERMINATED（终止）： 线程run()方法执行结束或因异常退出。</li>
+</ul>
+<ol start="9">
+<li>除了valite关键字线程间的通信方法？</li>
+</ol>
+<ul>
+<li>第一类：基于 synchronized 的 wait&#x2F;notify 机制</li>
+<li>这是最基础的通信方式。</li>
+<li>原理：利用对象监视器（Monitor）。线程调用 wait() 会释放锁并进入等待队列，直到其他线程调用 notify() 或 notifyAll() 唤醒它。</li>
+<li>注意点：必须在 synchronized 代码块中使用，且 wait() 通常要放在 while 循环中判断条件，以防止虚假唤醒。</li>
+<li>第二类：基于 JUC (java.util.concurrent) 的高级工具</li>
+<li>在实际项目中，我更多会使用 JUC 包下的类，因为它们比原生的 wait&#x2F;notify 更灵活、功能更强。</li>
+<li>Lock 和 Condition</li>
+<li>这是 synchronized 和 wait&#x2F;notify 的升级版。</li>
+<li>优势：ReentrantLock 可以绑定多个 Condition，这意味着我可以实现精准唤醒（比如只唤醒等待队列中的特定线程），而不需要像 notifyAll() 那样唤醒所有线程造成资源浪费。</li>
+<li>阻塞队列 (BlockingQueue)</li>
+<li>这是实现生产者-消费者模式的首选。</li>
+<li>场景：比如在消息处理系统中，生产者往队列 put 数据，消费者 take 数据。队列满或空时会自动阻塞线程，完全不需要手动处理锁和通信逻辑，非常安全且代码简洁。</li>
+<li>同步辅助类</li>
+<li>针对特定的协作场景，我会选择不同的工具：</li>
+<li>CountDownLatch：适用于“一对多”场景，比如主线程等待多个子线程（如加载配置、初始化服务）全部完成后才继续执行。</li>
+<li>CyclicBarrier：适用于“多对多”场景，比如计算大任务，需要等待所有分片线程都计算完，才能进行最后的汇总。</li>
+<li>Semaphore：主要用于限流，控制同时访问资源的线程数量。</li>
+</ul>
+<h1 id="华为"><a href="#华为" class="headerlink" title="华为"></a>华为</h1><ol>
+<li>微服务架构中服务间是怎么通信的？同步还是异步？安全稳定吗？</li>
+</ol>
+<ul>
+<li>在实际的微服务架构中，我们通常采用“同步+异步”的混合模式：核心业务链路（如订单查询）为了强实时性，会使用基于HTTP&#x2F;REST或gRPC的同步调用；而非核心业务（如发送通知、积分累计）则通过Kafka或RocketMQ等消息队列进行异步解耦，以实现流量削峰。关于安全性，内网通信默认是不可信的，我们通常引入Service Mesh（服务网格）或API网关来实施mTLS（双向认证）加密传输，并结合JWT令牌进行身份鉴权，同时配置熔断降级策略，防止因单点故障引发雪崩效应，从而确保通信既安全又稳定。<br>应对分布式IP攻击。</li>
+</ul>
+<ol start="2">
+<li>项目现在使用IP限流，可以防止同一IP多次恶意请求，如果是大量不同IP恶意请求怎么办？</li>
+</ol>
+<ul>
+<li>针对大量不同IP的分布式CC攻击，单纯依赖IP限流确实失效，我们需要将防御重心上移至“业务特征识别”和“流量清洗”。具体的解决方案是：在架构前端接入WAF（Web应用防火墙）或高防CDN，利用其威胁情报库清洗已知恶意流量；同时开启“人机验证”机制（如JS挑战、Cookie验证或滑块验证码），因为攻击脚本通常无法执行复杂的浏览器JS逻辑，以此区分真实用户与僵尸网络；此外，限流维度也要从单一IP升级为基于“用户ID”或“设备指纹”的全局频率控制，从而精准拦截恶意请求。</li>
+</ul>
+<h1 id="百度"><a href="#百度" class="headerlink" title="百度"></a>百度</h1><ol>
+<li>智能面试平台关键表结构</li>
+</ol>
+<ul>
+<li>口述版：</li>
+<li>我按业务域把表分成了几组，核心是「简历 → 面试 → 知识库」三条线，外加 LLM 配置。</li>
+<li>简历域两张表：resumes 和 resume_analyses。resumes 存文件元信息和解析结果——fileHash（SHA-256，建了唯一索引，用来去重）、storageKey&#x2F;storageUrl（RustFS&#x2F;S3 的存储引用）、resumeText（Tika 解析出来的纯文本）、以及 analyzeStatus（PENDING&#x2F;PROCESSING&#x2F;COMPLETED&#x2F;FAILED，支撑异步分析的状态机）。resume_analyses 通过 resume_id 外键一对多关联，存 AI 评测结果：总分 + 五个维度分（内容&#x2F;结构&#x2F;技能匹配&#x2F;表达&#x2F;项目），以及 summary、strengthsJson、suggestionsJson 这些 JSON 序列化的长文本。</li>
+<li>文字面试域是 interview_sessions 和 interview_answers。会话表有个 sessionId（UUID 唯一）和一个 requestId（幂等键，唯一，防重复建会话）；通过 resume_id 弱关联简历（可空，支持无简历的通用面试）；status 是 CREATED→IN_PROGRESS→COMPLETED→EVALUATED 的状态机；题目列表 questionsJson 和评估结果 overallScore&#x2F;overallFeedback 等都序列化存储；evaluateStatus 单独支撑异步评估。答案表通过 session_id 关联，(session_id, question_index) 建了唯一约束，保证同一题只存一条答案。</li>
+<li>语音面试域是 voice_interview_sessions、voice_interview_messages 和评估表。会话表多了 phase 相关的字段（intro&#x2F;tech&#x2F;project&#x2F;hr 四个阶段的开关、currentPhase）、暂停&#x2F;恢复时间（pausedAt&#x2F;resumedAt）、计划与实际时长。消息表用 message_type 区分 USER_SPEECH &#x2F; AI_SPEECH &#x2F; SYSTEM &#x2F; SUMMARY，存 user_recognized_text 和 ai_generated_text，sequence_num 保证顺序（还用它编码了上下文摘要覆盖的轮次）。</li>
+<li>知识库域是 knowledge_bases 和 knowledge_base_questions。知识库表类似简历表，但多了 vectorStatus（向量化状态机）、chunkCount（分块数）、questionGenStatus&#x2F;taskId（出题任务状态 + 幂等）。题目表存 AI 生成的题目 + referenceAnswer、scoringRubric（评分标准）、followUpsJson（追问）这些结构化字段。</li>
+<li>另外还有 llm_providers（可运行期增删改的模型配置）、以及 RAG 对话的 rag_chat_sessions &#x2F; rag_chat_messages。</li>
+<li>关键事实（被追问时用）：真正的表关系是 resumes 1—N resume_analyses、interview_sessions 1—N interview_answers、knowledge_bases 1—N knowledge_base_questions。两个贯穿全局的设计点值得主动提：① 所有长耗时 LLM 任务都有独立状态机字段（analyze&#x2F;evaluate&#x2F;vector&#x2F;questionGen），支撑异步化；② 去重靠 fileHash、幂等靠 requestId。</li>
+</ul>
+<ol start="2">
+<li>请求到来时整个限流流程</li>
+</ol>
+<ul>
+<li>限流是通过 AOP 切面做的。请求到达带 @RateLimit 注解的 Controller 方法时，RateLimitAspect 的 @Around 先拦截。</li>
+<li>第一步，用 method.getAnnotationsByType(RateLimit.class) 拿到这个方法上所有的限流规则——因为注解是可重复的，一个方法可以同时有 GLOBAL、IP、USER 多条规则，所有规则都通过才放行。</li>
+<li>第二步，生成 Redis key，格式是 ratelimit:{类名:方法名}:维度，GLOBAL 就是 :global，IP 是 :ip:客户端IP，USER 是 :user:用户ID。</li>
+<li>第三步，把参数打包成一次 Lua 调用：当前时间戳、一个 UUID 作为 requestId、规则数量，然后每条规则带上「本次申请的令牌数(1)、窗口时长(毫秒)、窗口内最大令牌数(count)」。</li>
+<li>第四步，用 evalSha 执行预加载好的 Lua 脚本。脚本里是两阶段：第一阶段只读，遍历所有维度、回收过期令牌、算剩余额度，只要有一个维度不够就 return -i（负的下标），这时候没改任何状态；只有全部维度都通过了，第二阶段才统一扣减（记录授权时间戳 + 减额度）。</li>
+<li>第五步，看返回值：大于 0 就 proceed() 放行业务方法；小于等于 0 就拒绝——先找注解里配的 fallback 降级方法，没有就抛 RateLimitExceededException，由全局异常处理器统一转成 Result.error 返回。</li>
+<li>还有一个兜底：如果 Redis 重启导致脚本缓存丢失，evalSha 会抛 NOSCRIPT，我 catch 到之后重新 scriptLoad 再重试一次。</li>
+<li>加分点：主动强调”多条规则打包成一次 Lua 调用”和”两阶段无副作用”这两个点，这是你区别于网上抄限流代码的地方。</li>
+</ul>
+<ol start="3">
+<li>令牌桶限流怎么处理并发问题</li>
+</ol>
+<ul>
+<li>令牌桶的并发问题本质是「读-判断-写」三步如果不原子，就会超卖：两个并发请求同时读到桶里还剩 1 个令牌，同时判断”够”，同时扣，结果两个都放行了。</li>
+<li>处理方式分两层。单机可以用 synchronized 或 ReentrantLock 把检查和扣减串起来，但分布式环境并发来自多个实例，单机锁没用。</li>
+<li>分布式的正确做法是用 Redis 单线程执行 Lua 脚本：Redis 本身是单线程命令模型，一个 Lua 脚本执行期间不会被其他命令插入，所以把「检查 + 扣减」写进一个 Lua 脚本里，就天然是原子的，从根上消除了竞态。</li>
+<li>我项目里实际用的是滑动窗口不是令牌桶，但处理并发的思路完全一样——我把所有维度的检查和扣减都放进一个 Lua 脚本，而且做了两阶段：第一阶段只读判断、任何维度不够直接返回且不落状态，第二阶段全部通过才统一扣减。这样既保证了原子性，又避免了”第一条扣了、第二条没通过”留下的半扣脏数据。</li>
+</ul>
+<ol start="4">
+<li>令牌数和滑动窗口怎么对应的</li>
+</ol>
+<ul>
+<li>这对应的是我注解里的两个参数：count 和 interval+timeUnit。count 就是窗口内的令牌总数（max_tokens），interval 就是窗口长度，合起来表达”在 interval 毫秒的滑动窗口内，最多发放 count 个令牌”。</li>
+<li>落到 Lua 里是这么对应的：max_tokens &#x3D; count（窗口上限）、interval（毫秒，窗口大小）、permits &#x3D; 1（每个请求申请 1 个令牌）。我用两个 key 维护：</li>
+<li>一个 value key 存当前剩余令牌数 current_val；</li>
+<li>一个 ZSET permits key 记录每次授权的时间戳和数量（member 是 requestId:规则下标:permits，score 是授权毫秒时间戳）。<br>请求进来时，先用 zrangebyscore 把窗口外（时间戳 &lt; now - interval）的过期记录捞出来，把这些记录占用的令牌数还回 current_val，然后判断 current_val 够不够本次申请。够就扣减、往 ZSET 里 zadd 一条本次授权记录。窗口是随时间滑动的，所以”令牌数”是固定上限、”窗口”决定多旧的历史会被回收。</li>
+<li>一句话总结：count 决定”最多给多少”，interval 决定”多久算一次周期”；滑动窗口靠 ZSET 记录每个令牌的发放时间、过期自动归还来实现，而不是像固定窗口那样按固定边界清零。</li>
+</ul>
+<ol start="5">
+<li>限流面对复杂嵌套对象怎么处理</li>
+</ol>
+<ul>
+<li>我的限流组件当前不解析请求体的嵌套对象。它的维度是固定的 GLOBAL &#x2F; IP &#x2F; USER，key 从「类名 + 方法名 + 维度 + IP&#x2F;用户ID」生成，走的是固定的维度枚举。</li>
+<li>但”复杂嵌套对象”这个问题的本质是：要从复杂入参里提取出一个稳定的限流标识（key）。如果要支持，我会用两种方式扩展：</li>
+<li>SpEL 表达式，跟 Spring Cache 的 @Cacheable(key &#x3D; “#user.id”) 一样，在注解里加一个 key &#x3D; “#request.user.id” 之类的表达式，用 SpEL 从入参里抽取嵌套字段作为限流 key。这样就能按”某个嵌套对象的某个字段”来限流。</li>
+<li>自定义 Key 生成器，定义一个 KeyGenerator，反射入参或按 JSONPath 提取。</li>
+<li>但有个原则必须守住：key 一定要是稳定、短小、可序列化的标量（比如 id、IP），不能把整个对象序列化成 key——那样 key 会爆炸、而且对象字段一变 key 就变，限流就失效了。所以复杂对象限流的落点永远是”提取稳定标识”，而不是”序列化整个对象”。</li>
+</ul>
+<ol start="6">
+<li>项目中java代码怎么调用的lua脚本</li>
+</ol>
+<ul>
+<li>我用的是 Redisson 的 RScript，分”预加载”和”执行”两步。</li>
+<li>加载：脚本放在 classpath 的 resources&#x2F;scripts&#x2F;rate_limit_single.lua，类加载时用 static 块读出来存成字符串；然后在 @PostConstruct 里 redissonClient.getScript(StringCodec.INSTANCE) 拿到 RScript，调用 scriptLoad(LUA_SCRIPT) 把脚本预加载到 Redis，拿回一个 SHA1 摘要存起来。</li>
+<li>执行：每次请求用 rScript.evalSha(RScript.Mode.READ_WRITE, sha1, RScript.ReturnType.VALUE, keys, args) 执行。keys 是所有维度的 Redis key（对应 Lua 里的 KEYS[i]），args 是参数列表（对应 ARGV）——ARGV[1] 当前毫秒时间戳、ARGV[2] 请求唯一ID、ARGV[3] 规则数量，后面每条规则三个参数「申请令牌数、窗口毫秒、窗口最大令牌数」。</li>
+<li>为什么用 evalSha 而不是 eval：预加载后每次只传 40 字节的 SHA1，不用重复传整个脚本体，省网络、省带宽。</li>
+<li>兜底：Redis 重启后脚本缓存会丢，evalSha 会抛 NOSCRIPT，我在 catch 里判断到这个错误就重新 scriptLoad 再执行一次，做到自愈。</li>
+</ul>
+<ol start="7">
+<li>单词拆分</li>
+</ol>
 
       
 
@@ -427,7 +618,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%81%E5%B1%B9%E4%BF%A1%E6%81%AF"><span class="toc-number">1.</span> <span class="toc-text">允屹信息</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%85%BE%E8%AE%AFqq"><span class="toc-number">2.</span> <span class="toc-text">腾讯qq</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%81%E5%B1%B9%E4%BF%A1%E6%81%AF"><span class="toc-number">1.</span> <span class="toc-text">允屹信息</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%85%BE%E8%AE%AFqq"><span class="toc-number">2.</span> <span class="toc-text">腾讯qq</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%BB%B4%E6%BB%B4"><span class="toc-number">3.</span> <span class="toc-text">滴滴</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8D%8E%E4%B8%BA"><span class="toc-number">4.</span> <span class="toc-text">华为</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%99%BE%E5%BA%A6"><span class="toc-number">5.</span> <span class="toc-text">百度</span></a></li></ol>
                     </div>
                 </span>
             </div>
